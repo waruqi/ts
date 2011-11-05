@@ -1,7 +1,7 @@
 #include "ts.h"
 #include "stdio.h"
 
-void ts_table_pat_callback(ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+void ts_table_pat_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_pat_t*			pat				= (ts_table_pat_t*)table;
@@ -14,7 +14,7 @@ void ts_table_pat_callback(ts_packet_t* ts_packet, ts_table_header_t* table, voi
 	ts_table_pat_dump(ts_packet, pat);
 }
 
-void ts_table_pmt_callback(ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+void ts_table_pmt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_pmt_t*			pmt				= (ts_table_pmt_t*)table;
@@ -27,7 +27,7 @@ void ts_table_pmt_callback(ts_packet_t* ts_packet, ts_table_header_t* table, voi
 	ts_table_pmt_dump(ts_packet, pmt);
 }
 
-void ts_table_sdt_callback(ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+void ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_sdt_t*			sdt				= (ts_table_sdt_t*)table;
@@ -39,7 +39,7 @@ void ts_table_sdt_callback(ts_packet_t* ts_packet, ts_table_header_t* table, voi
 
 	ts_table_sdt_dump(ts_packet, sdt);
 }
-void ts_table_eit_callback(ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+void ts_table_eit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_eit_t*			eit				= (ts_table_eit_t*)table;
@@ -51,7 +51,7 @@ void ts_table_eit_callback(ts_packet_t* ts_packet, ts_table_header_t* table, voi
 
 	ts_table_eit_dump(ts_packet, eit);
 }
-void ts_table_nit_callback(ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+void ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_nit_t*			nit				= (ts_table_nit_t*)table;
@@ -78,10 +78,10 @@ int main(int argc, char** argv)
 
 		ts_decoder_t*				ts_decoder		= ts_create_decoder();
 		ts_table_pat_decoder_t*		tb_pat_decoder	= ts_table_pat_create_decoder(&ts_table_pat_callback, NULL);
-		ts_table_pmt_decoder_t*		tb_pmt_decoder	= ts_table_pmt_create_decoder(0xa0, 9, &ts_table_pmt_callback, NULL);
+		ts_table_pmt_decoder_t*		tb_pmt_decoder	= ts_table_pmt_create_decoder(0xfff, 1, &ts_table_pmt_callback, NULL);
 		ts_table_sdt_decoder_t*		tb_sdt_decoder	= ts_table_sdt_create_decoder(&ts_table_sdt_callback, NULL);
 		ts_table_eit_decoder_t*		tb_eit_decoder	= ts_table_eit_create_decoder(&ts_table_eit_callback, NULL);
-		ts_table_nit_decoder_t*		tb_nit_decoder	= ts_table_eit_create_decoder(&ts_table_nit_callback, NULL);
+		ts_table_nit_decoder_t*		tb_nit_decoder	= ts_table_nit_create_decoder(&ts_table_nit_callback, NULL);
 
 		// read packet
 		while (TS_TRUE == ts_read_packet(fd, &ts_packet))

@@ -137,6 +137,7 @@ static void ts_epg_tb_decoder_list_destroy(ts_epg_decoder_t* epg_decoder)
 		free(entry);
 		entry = tmp;
 	}
+	epg_decoder->tb_decoder_list = NULL;
 }
 
 // remove a new decoder from table decoder list header
@@ -327,16 +328,6 @@ static ts_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet,
 		service = service->next;
 	}
 
-#if 0
-	// remove sdt decoder from table decoder list
-	ts_epg_tb_decoder_list_remove(epg_decoder, (ts_table_decoder_t*)tb_decoder);
-	//destroy sdt decoder
-	ts_table_sdt_destroy_decoder(tb_decoder);
-#else
-	// stop decoding and destroy decoder list
-	ts_epg_tb_decoder_list_destroy(epg_decoder);
-#endif
-	
 	// finish callback
 	ts_epg_program_t* program = epg_decoder->program_list;
 	while (program)
@@ -357,6 +348,16 @@ static ts_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet,
 		program = program->next;
 	}
 
+#if 0
+	// remove sdt decoder from table decoder list
+	ts_epg_tb_decoder_list_remove(epg_decoder, (ts_table_decoder_t*)tb_decoder);
+	//destroy sdt decoder
+	ts_table_sdt_destroy_decoder(tb_decoder);
+#else
+	// stop decoding and destroy decoder list
+	ts_epg_tb_decoder_list_destroy(epg_decoder);
+#endif
+	
 	// not continue to decode next sdt if return TS_FALSE
 	return TS_FALSE;
 }
