@@ -12,7 +12,7 @@ extern "C" {
  * implemention
  */
 // guess table id type
-static ts_table_id_t ts_table_guess_table_id(ts_uint_t pid, ts_uint_t table_id)
+static ts_table_id_t ts_table_guess_table_id(tb_uint_t pid, tb_uint_t table_id)
 {
 	ts_table_entry_t* entries = g_tb_table_entries;
 	while (entries->table_id_t != en_ts_table_end)
@@ -22,14 +22,14 @@ static ts_table_id_t ts_table_guess_table_id(ts_uint_t pid, ts_uint_t table_id)
 	}
 
 	// check
-	TS_ASSERT((pid == TS_PID_PAT) == (entries->table_id_t == en_ts_table_pat));
+	ts_assert((pid == TS_PID_PAT) == (entries->table_id_t == en_ts_table_pat));
 
 	return entries->table_id_t;
 }
-static ts_bool_t ts_table_decode_specific_table(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder, ts_table_header_t* table)
+static tb_bool_t ts_table_decode_specific_table(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder, ts_table_header_t* table)
 {
-	TS_ASSERT(ts_packet && tb_decoder && table);
-	if (!ts_packet || !tb_decoder || !table) return TS_FALSE;
+	ts_assert(ts_packet && tb_decoder && table);
+	if (!ts_packet || !tb_decoder || !table) return TB_FALSE;
 
 	ts_header_t*		ts_header		= &(ts_packet->header);
 	ts_table_header_t*	table_header 	= table;
@@ -55,12 +55,12 @@ static ts_bool_t ts_table_decode_specific_table(ts_packet_t* ts_packet, ts_table
 
 	// specific table callback
 	if (tb_decoder->callback) return tb_decoder->callback(tb_decoder, ts_packet, table, tb_decoder->cb_data);
-	else return TS_TRUE;
+	else return TB_TRUE;
 }
 // merge all pat sections
 static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder)
 {
-	TS_ASSERT(ts_packet && tb_decoder);
+	ts_assert(ts_packet && tb_decoder);
 	if (!ts_packet || !tb_decoder) return ;
 
 	ts_data_t*			ts_data			= &(ts_packet->data);
@@ -68,9 +68,9 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 	ts_payload_t*		ts_payload		= &(ts_packet->payload);
 	ts_section_t*		section 		= tb_decoder->sc_decoder.current_section;
 
-	ts_bool_t is_append = TS_TRUE;
-	ts_bool_t is_reinit = TS_FALSE;
-	ts_int_t i;
+	tb_bool_t is_append = TB_TRUE;
+	tb_bool_t is_reinit = TB_FALSE;
+	tb_int_t i;
 
 	// check this section
 	if (tb_decoder->table_check) is_append = tb_decoder->table_check(tb_decoder, section);
@@ -80,13 +80,13 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 		tb_decoder->current_table = (ts_table_header_t*)tb_decoder->table_create(tb_decoder, NULL);
 
 	// now if is_append is true then we have a valid pat section
-	if (TS_TRUE == is_append)
+	if (TB_TRUE == is_append)
 	{
 		// ts discontinuity check
-		if (TS_TRUE == tb_decoder->sc_decoder.is_discontinuous)
+		if (TB_TRUE == tb_decoder->sc_decoder.is_discontinuous)
 		{
-			is_reinit = TS_TRUE;
-			tb_decoder->sc_decoder.is_discontinuous = TS_FALSE;
+			is_reinit = TB_TRUE;
+			tb_decoder->sc_decoder.is_discontinuous = TB_FALSE;
 		}
 		else
 		{
@@ -96,26 +96,26 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 				// check table_id_extension
 				if (tb_decoder->building_table->table_id_extension != section->table_id_extension)
 				{
-					TS_DBG("table_id_extension differs whereas no TS discontinuity has occured");
-					is_reinit = TS_TRUE;
+					ts_trace("table_id_extension differs whereas no TS discontinuity has occured");
+					is_reinit = TB_TRUE;
 				}
 				// check version_number
 				else if (tb_decoder->building_table->version_number != section->version_number)
 				{
-					TS_DBG("version_number differs whereas no discontinuity has occured");
-					is_reinit = TS_TRUE;
+					ts_trace("version_number differs whereas no discontinuity has occured");
+					is_reinit = TB_TRUE;
 				}
 				// check last_section_number
 				else if (tb_decoder->last_section_number != section->last_section_number)
 				{
-					TS_DBG("'last_section_number differs whereas no discontinuity has occured");
-					is_reinit = TS_TRUE;
+					ts_trace("'last_section_number differs whereas no discontinuity has occured");
+					is_reinit = TB_TRUE;
 				}
 			}
 			else
 			{
 				// if the pat with this version has been processed, then ignore it
-				if ((TS_TRUE == tb_decoder->is_current_valid)
+				if ((TB_TRUE == tb_decoder->is_current_valid)
 				&& (tb_decoder->current_table->version_number == section->version_number))
 				{
 					// signal a new pat if the previous one wasn't active
@@ -124,21 +124,21 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 					{
 						// decode specific table
 						tb_decoder->current_table->current_next_indicator = 1;
-						if (TS_FALSE == ts_table_decode_specific_table(ts_packet, tb_decoder, tb_decoder->current_table)) return ;
+						if (TB_FALSE == ts_table_decode_specific_table(ts_packet, tb_decoder, tb_decoder->current_table)) return ;
 					}
 
 					// don't decode since this version is already decoded
-					is_append = TS_FALSE;
+					is_append = TB_FALSE;
 				}
 			}
 		}
 	}
 
 	// reinit the decoder if wanted
-	if (TS_TRUE == is_reinit)
+	if (TB_TRUE == is_reinit)
 	{
 		// force redecoding
-		tb_decoder->is_current_valid = TS_FALSE;
+		tb_decoder->is_current_valid = TB_FALSE;
 
 		// free structures
 		if (tb_decoder->building_table)
@@ -159,9 +159,9 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 	}
 
 	// append the section to the list if wanted
-	if (TS_TRUE == is_append)
+	if (TB_TRUE == is_append)
 	{
-		ts_bool_t is_complete = TS_FALSE;
+		tb_bool_t is_complete = TB_FALSE;
 
 		// initialize the structures if it's the first section received
 		if (!tb_decoder->building_table)
@@ -176,7 +176,7 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 		// fill the section array
 		if (tb_decoder->sections[section->section_number])
 		{
-			TS_DBG("overwrite section number %d", section->section_number);
+			ts_trace("overwrite section number %d", section->section_number);
 			ts_section_destroy_section(tb_decoder->sections[section->section_number]);
 		}
 		tb_decoder->sections[section->section_number] = section;
@@ -185,15 +185,15 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 		for (i = 0; i <= tb_decoder->last_section_number; i++)
 		{
 			if (!tb_decoder->sections[i]) break;
-			if (i == tb_decoder->last_section_number) is_complete = TS_TRUE;
+			if (i == tb_decoder->last_section_number) is_complete = TB_TRUE;
 		}
 
 		// process a complete pat
-		if (is_complete == TS_TRUE)
+		if (is_complete == TB_TRUE)
 		{
 			// save the current information
 			*(tb_decoder->current_table) = *(tb_decoder->building_table);
-			tb_decoder->is_current_valid = TS_TRUE;
+			tb_decoder->is_current_valid = TB_TRUE;
 
 			// chain the sections for process all sections
 			if (tb_decoder->last_section_number)
@@ -213,7 +213,7 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 				tb_decoder->sections[i] = NULL;
 
 			// decode specific table
-			if (TS_FALSE == ts_table_decode_specific_table(ts_packet, tb_decoder, tb_decoder->building_table)) return;
+			if (TB_FALSE == ts_table_decode_specific_table(ts_packet, tb_decoder, tb_decoder->building_table)) return;
 
 			// destroy pat
 			if (tb_decoder->table_destroy) tb_decoder->table_destroy(tb_decoder, (void*)tb_decoder->building_table);
@@ -226,7 +226,7 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 // section callback
 static void ts_section_callback(ts_packet_t* ts_packet, void* sc_decoder)
 {
-	TS_ASSERT(ts_packet && sc_decoder);
+	ts_assert(ts_packet && sc_decoder);
 	if (!ts_packet || !sc_decoder) return ;
 
 	// merge all sections and decode specific table
@@ -235,9 +235,9 @@ static void ts_section_callback(ts_packet_t* ts_packet, void* sc_decoder)
 /* //////////////////////////////////////////////////////////////////
  * interface implemention
  */
-void ts_table_decoder_init(ts_table_decoder_t* tb_decoder, ts_uint_t pid_filter)
+void ts_table_decoder_init(ts_table_decoder_t* tb_decoder, tb_uint_t pid_filter)
 {
-	TS_ASSERT(tb_decoder);
+	ts_assert(tb_decoder);
 	if (!tb_decoder) return ;
 
 	// init section decoders
@@ -253,12 +253,12 @@ void ts_table_decoder_init(ts_table_decoder_t* tb_decoder, ts_uint_t pid_filter)
 	tb_decoder->cb_data	= NULL;
 
 	// sets initial state
-	tb_decoder->is_current_valid = TS_FALSE;
+	tb_decoder->is_current_valid = TB_FALSE;
 	tb_decoder->building_table = NULL;
 	tb_decoder->current_table = NULL;
 
 	// init sections
-	ts_uint_t i;
+	tb_uint_t i;
 	for (i = 0; i < TS_TABLE_SECTIONS_MAX_COUNT; i++)
 		tb_decoder->sections[i] = NULL;
 
@@ -283,7 +283,7 @@ void ts_table_decoder_exit(ts_table_decoder_t* tb_decoder)
 		}
 
 		// clear the section array
-		ts_int_t i;
+		tb_int_t i;
 		for (i = 0; i < TS_TABLE_SECTIONS_MAX_COUNT; i++)
 		{
 			if (tb_decoder->sections[i])
@@ -294,27 +294,27 @@ void ts_table_decoder_exit(ts_table_decoder_t* tb_decoder)
 		}
 
 		// current decoder is invalid
-		tb_decoder->is_current_valid = TS_FALSE;
+		tb_decoder->is_current_valid = TB_FALSE;
 	}
 }
 // decode table
-ts_bool_t ts_table_decode(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder)
+tb_bool_t ts_table_decode(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder)
 {
-	TS_ASSERT(ts_packet);
+	ts_assert(ts_packet);
 	if (!ts_packet) return ;
 
 	// filter pid
-	if (tb_decoder->pid_filter != ts_packet->header.pid) return TS_FALSE;
+	if (tb_decoder->pid_filter != ts_packet->header.pid) return TB_FALSE;
 
 	// decode sections
 	ts_section_decode(ts_packet, &(tb_decoder->sc_decoder));
 
-	return TS_TRUE;
+	return TB_TRUE;
 }
 // register callback
 void ts_table_register_callback(ts_table_decoder_t* tb_decoder, ts_table_callback_t callback, void* cb_data)
 {
-	TS_ASSERT(tb_decoder);
+	ts_assert(tb_decoder);
 	if (!tb_decoder) return ;
 
 	tb_decoder->callback = callback;

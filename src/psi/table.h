@@ -63,21 +63,21 @@ typedef enum __ts_table_id_t
 // table header type
 typedef struct __ts_table_header_t
 {
-	ts_uint_t				table_id;
-	ts_uint_t				section_syntax_indicator;
-	ts_uint_t				section_length;
-	ts_uint_t				table_id_extension;		//!< transport_stream_id(pat, sdt), program_number(pmt), service_id(eit), network_id(nit), bouquet_id(bat)
-	ts_uint_t				version_number;
-	ts_uint_t				current_next_indicator;
-	ts_uint_t				section_number;
-	ts_uint_t				last_section_number;
+	tb_uint_t				table_id;
+	tb_uint_t				section_syntax_indicator;
+	tb_uint_t				section_length;
+	tb_uint_t				table_id_extension;		//!< transport_stream_id(pat, sdt), program_number(pmt), service_id(eit), network_id(nit), bouquet_id(bat)
+	tb_uint_t				version_number;
+	tb_uint_t				current_next_indicator;
+	tb_uint_t				section_number;
+	tb_uint_t				last_section_number;
 
-	ts_uint32_t				crc;
+	tb_uint32_t				crc;
 
 }ts_table_header_t;
 
 // table callback type
-typedef ts_bool_t			(*ts_table_callback_t)(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
+typedef tb_bool_t			(*ts_table_callback_t)(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
 
 /*!\brief table decoder
  *
@@ -93,7 +93,7 @@ typedef struct __ts_table_decoder_t
 	ts_section_decoder_t	sc_decoder;		//!< \note must be at first position for getting tb_decoder from it
 
 	// pid filter
-	ts_uint_t				pid_filter;
+	tb_uint_t				pid_filter;
 
 	// table decoder type
 	ts_table_id_t			table_id_t;
@@ -105,23 +105,23 @@ typedef struct __ts_table_decoder_t
 	// for decoding table with N sections
 	ts_table_header_t*		current_table;
 	ts_table_header_t*		building_table;
-	ts_bool_t				is_current_valid;
-	ts_uint_t				last_section_number;
+	tb_bool_t				is_current_valid;
+	tb_uint_t				last_section_number;
 	ts_section_t*			sections[TS_TABLE_SECTIONS_MAX_COUNT];
 
 	// speciic decoder functions
 	void* 					(*table_create)(void* decoder, ts_section_t* sections);
 	void					(*table_destroy)(void* decoder, void* table);
 	void					(*table_decode)(void* decoder, void* table, ts_section_t* sections);
-	ts_bool_t 				(*table_check)(void* decoder, ts_section_t* section);
+	tb_bool_t 				(*table_check)(void* decoder, ts_section_t* section);
 
 }ts_table_decoder_t;
 
 // table entry type
 typedef struct __ts_table_entry_t
 {
-	ts_uint_t			from;		// from id 1
-	ts_uint_t			to;			// to   id 3
+	tb_uint_t			from;		// from id 1
+	tb_uint_t			to;			// to   id 3
 	ts_table_id_t		table_id_t;	// table type
 
 }ts_table_entry_t;
@@ -179,10 +179,10 @@ static ts_table_entry_t g_tb_table_entries[] =
  * interfaces
  */
 
-void					ts_table_decoder_init(ts_table_decoder_t* tb_decoder, ts_uint_t pid_filter);
+void					ts_table_decoder_init(ts_table_decoder_t* tb_decoder, tb_uint_t pid_filter);
 void					ts_table_decoder_exit(ts_table_decoder_t* tb_decoder);
 
-ts_bool_t 				ts_table_decode(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder);
+tb_bool_t 				ts_table_decode(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder);
 void 					ts_table_register_callback(ts_table_decoder_t* tb_decoder, ts_table_callback_t callback, void* cb_data);
 
 // extern "C" {

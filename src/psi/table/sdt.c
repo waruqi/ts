@@ -18,13 +18,13 @@ extern "C" {
  */
 // add a service at the end of the sdt.
 static ts_table_sdt_service_t* ts_table_sdt_add_service(	ts_table_sdt_t* sdt,
-													ts_uint_t service_id
-												, 	ts_uint_t eit_schedule_flag
-												,	ts_uint_t eit_present_following_flag
-												,	ts_uint_t running_status
-												,	ts_uint_t free_ca_mode)
+													tb_uint_t service_id
+												, 	tb_uint_t eit_schedule_flag
+												,	tb_uint_t eit_present_following_flag
+												,	tb_uint_t running_status
+												,	tb_uint_t free_ca_mode)
 {
-	TS_ASSERT(sdt);
+	ts_assert(sdt);
 	if (!sdt) return NULL;
 
 	// create a new service
@@ -55,9 +55,9 @@ static ts_table_sdt_service_t* ts_table_sdt_add_service(	ts_table_sdt_t* sdt,
 
 // add a descriptor in the sdt service description.
 static ts_descriptor_t* ts_table_sdt_service_add_descriptor	(	ts_table_sdt_service_t* service
-																,	ts_uint_t descriptor_tag
-																,	ts_uint_t descriptor_length
-																,	ts_byte_t* data)
+																,	tb_uint_t descriptor_tag
+																,	tb_uint_t descriptor_length
+																,	tb_byte_t* data)
 {
 	ts_descriptor_t* descriptor = ts_descriptor_create_descriptor(descriptor_tag, descriptor_length, data);
 	if (descriptor)
@@ -79,7 +79,7 @@ static void* ts_table_sdt_create(void* decoder, ts_section_t* sections)
 {
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)malloc(sizeof(ts_table_sdt_t));
 	ts_table_header_t* header = (ts_table_header_t*)sdt;
-	TS_ASSERT(sdt);
+	ts_assert(sdt);
 
 	// init header
 	ts_section_t* section = sections;
@@ -95,7 +95,7 @@ static void* ts_table_sdt_create(void* decoder, ts_section_t* sections)
 		header->last_section_number			= section->last_section_number;
 		header->crc							= section->crc;
 
-		sdt->original_network_id			= ts_get_bits(section->payload_start, 0, 0, 16);
+		sdt->original_network_id			= tb_bits_get_ubits32(section->payload_start, 0, 16);
 	}
 
 	// need analyze
@@ -106,7 +106,7 @@ static void* ts_table_sdt_create(void* decoder, ts_section_t* sections)
 // empty the all programs
 static void ts_table_sdt_empty(void* decoder, void* table)
 {
-	TS_ASSERT(table);
+	ts_assert(table);
 	if (!table) return ;
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)table;
 
@@ -124,7 +124,7 @@ static void ts_table_sdt_empty(void* decoder, void* table)
 // destroy sdt
 static void ts_table_sdt_destroy(void* decoder, void* table)
 {
-	TS_ASSERT(table);
+	ts_assert(table);
 	if (!table) return ;
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)table;
 
@@ -134,24 +134,24 @@ static void ts_table_sdt_destroy(void* decoder, void* table)
 // decode sdt
 static void ts_table_sdt_decode(void* decoder, void* table, ts_section_t* sections)
 {
-	TS_ASSERT(table && sections);
+	ts_assert(table && sections);
 	if (!table || !sections) return ;
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)table;
 	ts_section_t* section = sections;
 
-	ts_byte_t* p = NULL;
-	ts_byte_t* end = NULL;
+	tb_byte_t* p = NULL;
+	tb_byte_t* end = NULL;
 	while (section)
 	{
 		for(p = section->payload_start + 3; p + 4 < section->payload_end;)
 		{
-			ts_uint_t service_id					= ts_get_bits(p, 0, 0, 16);
-			//ts_uint_t reversed					= ts_get_bits(p, 0, 16, 6);
-			ts_uint_t eit_schedule_flag				= ts_get_bits(p, 0, 22, 1);
-			ts_uint_t eit_present_following_flag	= ts_get_bits(p, 0, 23, 1);
-			ts_uint_t running_status				= ts_get_bits(p, 0, 24, 3);
-			ts_uint_t free_ca_mode					= ts_get_bits(p, 0, 27, 1);
-			ts_uint_t descriptors_loop_length		= ts_get_bits(p, 0, 28, 12);
+			tb_uint_t service_id					= tb_bits_get_ubits32(p, 0, 16);
+			//tb_uint_t reversed					= tb_bits_get_ubits32(p, 16, 6);
+			tb_uint_t eit_schedule_flag				= tb_bits_get_ubits32(p, 22, 1);
+			tb_uint_t eit_present_following_flag	= tb_bits_get_ubits32(p, 23, 1);
+			tb_uint_t running_status				= tb_bits_get_ubits32(p, 24, 3);
+			tb_uint_t free_ca_mode					= tb_bits_get_ubits32(p, 27, 1);
+			tb_uint_t descriptors_loop_length		= tb_bits_get_ubits32(p, 28, 12);
 
 			ts_table_sdt_service_t* service = ts_table_sdt_add_service	(	sdt
 																,	service_id
@@ -167,8 +167,8 @@ static void ts_table_sdt_decode(void* decoder, void* table, ts_section_t* sectio
 
 			while (p + 2 <= end)
 			{
-				ts_uint_t descriptor_tag	= p[0];
-				ts_uint_t descriptor_length	= p[1];
+				tb_uint_t descriptor_tag	= p[0];
+				tb_uint_t descriptor_length	= p[1];
 
 				if (descriptor_length + 2 <= end - p) ts_table_sdt_service_add_descriptor(service, descriptor_tag, descriptor_length, p + 2);
 				p += 2 + descriptor_length;
@@ -180,21 +180,21 @@ static void ts_table_sdt_decode(void* decoder, void* table, ts_section_t* sectio
 	}
 }
 // check section
-static ts_bool_t ts_table_sdt_check(void* decoder, ts_section_t* section)
+static tb_bool_t ts_table_sdt_check(void* decoder, ts_section_t* section)
 {
-	TS_ASSERT(decoder && section);
-	if (!decoder || !section) return TS_FALSE;
-	if (!section) return TS_FALSE;
+	ts_assert(decoder && section);
+	if (!decoder || !section) return TB_FALSE;
+	if (!section) return TB_FALSE;
 
 	// check section_syntax_indicator: must be 1
 	if (!section->section_syntax_indicator)
 	{
 		// invalid section_syntax_indicator
-		TS_DBG("invalid section (section_syntax_indicator == 0)");
-		return TS_FALSE;
+		ts_trace("invalid section (section_syntax_indicator == 0)");
+		return TB_FALSE;
 	}
 
-	return TS_TRUE;
+	return TB_TRUE;
 }
 
 /* //////////////////////////////////////////////////////////////////
@@ -233,44 +233,44 @@ void ts_table_sdt_destroy_decoder(ts_table_sdt_decoder_t* tb_sdt_decoder)
 // dump sdt info
 void ts_table_sdt_dump(ts_packet_t* ts_packet, ts_table_sdt_t* sdt)
 {
-	TS_ASSERT(sdt && ts_packet);
+	ts_assert(sdt && ts_packet);
 	if (!sdt || !ts_packet) return ;
 
 	ts_table_header_t* header = (ts_table_header_t*)sdt;
-	TS_PRINT("----------------------------------------"										);
-	TS_PRINT("sdt(pid:%x)",						ts_packet->header.pid						);
-	TS_PRINT("----------------------------------------"										);
-	TS_PRINT("table_id:%x",						header->table_id							);
-	TS_PRINT("section_syntax_indicator:%u",		header->section_syntax_indicator			);
-	TS_PRINT("section_length:%u",				header->section_length						);
-	TS_PRINT("transport_stream_id:%u",			header->table_id_extension					);
-	TS_PRINT("version_number:%u",				header->version_number						);
-	TS_PRINT("current_next_indicator:%u",		header->current_next_indicator				);
-	TS_PRINT("section_number:%u",				header->section_number						);
-	TS_PRINT("last_section_number:%u",			header->last_section_number					);
-	TS_PRINT("crc:%x",							header->crc									);
-	TS_PRINT("original_network_id:%x\n",		sdt->original_network_id					);
+	ts_print("----------------------------------------"										);
+	ts_print("sdt(pid:%x)",						ts_packet->header.pid						);
+	ts_print("----------------------------------------"										);
+	ts_print("table_id:%x",						header->table_id							);
+	ts_print("section_syntax_indicator:%u",		header->section_syntax_indicator			);
+	ts_print("section_length:%u",				header->section_length						);
+	ts_print("transport_stream_id:%u",			header->table_id_extension					);
+	ts_print("version_number:%u",				header->version_number						);
+	ts_print("current_next_indicator:%u",		header->current_next_indicator				);
+	ts_print("section_number:%u",				header->section_number						);
+	ts_print("last_section_number:%u",			header->last_section_number					);
+	ts_print("crc:%x",							header->crc									);
+	ts_print("original_network_id:%x\n",		sdt->original_network_id					);
 
 	ts_table_sdt_service_t* service = sdt->service_list;
 	while (service)
 	{
-		TS_PRINT("\tservice_id:%u",					service->service_id					);
-		TS_PRINT("\teit_schedule_flag:%u",			service->eit_schedule_flag			);
-		TS_PRINT("\teit_present_following_flag:%u",	service->eit_present_following_flag	);
-		TS_PRINT("\trunning_status:%u",				service->running_status				);
-		TS_PRINT("\tfree_ca_mode:%u\n",				service->free_ca_mode				);
+		ts_print("\tservice_id:%u",					service->service_id					);
+		ts_print("\teit_schedule_flag:%u",			service->eit_schedule_flag			);
+		ts_print("\teit_present_following_flag:%u",	service->eit_present_following_flag	);
+		ts_print("\trunning_status:%u",				service->running_status				);
+		ts_print("\tfree_ca_mode:%u\n",				service->free_ca_mode				);
 
 		ts_descriptor_t* descriptor = service->descriptor_list;
 		while (descriptor)
 		{
-			TS_PRINT("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag			);
-			TS_PRINT("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length		);
+			ts_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag			);
+			ts_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length		);
 
 			if (descriptor->descriptor_tag == TS_DESCRIPTOR_TAG_SERVICE_DESCRIPTOR)
 			{
 				ts_service_descriptor_t* p = ts_service_descriptor_decode(descriptor);
-				TS_PRINT("\t\tservice_provider_name:%s",	p->service_provider_name			);
-				TS_PRINT("\t\tservice_name:%s\n",			p->service_name						);
+				ts_print("\t\tservice_provider_name:%s",	p->service_provider_name			);
+				ts_print("\t\tservice_name:%s\n",			p->service_name						);
 			}
 
 			descriptor = descriptor->next;
@@ -278,7 +278,7 @@ void ts_table_sdt_dump(ts_packet_t* ts_packet, ts_table_sdt_t* sdt)
 
 		service = service->next;
 	}
-	TS_PRINT("========================================\n"										);
+	ts_print("========================================\n"										);
 }
 
 // extern "C" {

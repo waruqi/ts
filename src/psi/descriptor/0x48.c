@@ -14,14 +14,14 @@
 // decode service a descriptor
 ts_service_descriptor_t* ts_service_descriptor_decode(ts_descriptor_t* dr)
 {
-	TS_ASSERT(dr);
+	ts_assert(dr);
 	if (!dr) return NULL;
 	ts_service_descriptor_t* p = NULL;
 
 	// check the tag
 	if (dr->descriptor_tag != TS_DESCRIPTOR_TAG_SERVICE_DESCRIPTOR)
 	{
-		TS_DBG("service_descriptor: bad tag (%#x)", dr->descriptor_tag);
+		ts_trace("service_descriptor: bad tag (%#x)", dr->descriptor_tag);
 		return NULL;
 	}
 
@@ -31,14 +31,14 @@ ts_service_descriptor_t* ts_service_descriptor_decode(ts_descriptor_t* dr)
 	// check the length
 	if (dr->descriptor_length < 3)
 	{
-		TS_DBG("service_descriptor: bad length (%d)", dr->descriptor_length);
+		ts_trace("service_descriptor: bad length (%d)", dr->descriptor_length);
 		return NULL;
 	}
 
 	// check data
 	if (!dr->data)
 	{
-		TS_DBG("service_descriptor: invalid data");
+		ts_trace("service_descriptor: invalid data");
 		return NULL;
 	}
 
@@ -46,7 +46,7 @@ ts_service_descriptor_t* ts_service_descriptor_decode(ts_descriptor_t* dr)
 	p = (ts_service_descriptor_t*)malloc(sizeof(ts_service_descriptor_t));
 	if (!p)
 	{
-		TS_DBG("service_descriptor: out of memory");
+		ts_trace("service_descriptor: out of memory");
 		return NULL;
 	}
 	

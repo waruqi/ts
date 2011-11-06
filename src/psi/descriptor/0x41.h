@@ -24,8 +24,8 @@ extern "C" {
 // service list descriptior type
 typedef struct __ts_service_list_descriptor_t
 {
-	ts_uint_t								service_id;
-	ts_uint_t								service_type;
+	tb_uint_t								service_id;
+	tb_uint_t								service_type;
 
 	struct __ts_service_list_descriptor_t*	next;
 

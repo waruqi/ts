@@ -33,7 +33,7 @@ extern "C" {
  *   ---------------------
  *   crc = (crc << 8) ^ s_crc32_table[(crc >> 24) ^ (data_byte)];
  */
-static ts_uint32_t g_crc32_table[256] =
+static tb_uint32_t g_crc32_table[256] =
 {
   0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
   0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
@@ -104,7 +104,7 @@ static ts_uint32_t g_crc32_table[256] =
 /* //////////////////////////////////////////////////////////////////
  * implemention
  */
-ts_section_t* ts_section_create_section(ts_size_t max_size)
+ts_section_t* ts_section_create_section(tb_size_t max_size)
 {
 	// allocates the ts_section_t structure
 	ts_section_t* section = (ts_section_t*)malloc(sizeof(ts_section_t));
@@ -112,7 +112,7 @@ ts_section_t* ts_section_create_section(ts_size_t max_size)
 	if (section != NULL)
 	{
 		// allocates the data memory area
-		section->data = (ts_byte_t*)malloc(max_size * sizeof(ts_byte_t));
+		section->data = (tb_byte_t*)malloc(max_size * sizeof(tb_byte_t));
 
 		// init payload_end
 		if (section->data) section->payload_end = section->data;
@@ -139,13 +139,13 @@ ts_section_t* ts_section_create_section(ts_size_t max_size)
 	}
 }
 // check the CRC_32 if the section has section_syntax_indicator set.
-ts_bool_t ts_section_valid_section(ts_section_t* section)
+tb_bool_t ts_section_valid_section(ts_section_t* section)
 {
-	if (!section) return TS_FALSE;
+	if (!section) return TB_FALSE;
 	if (section->section_syntax_indicator)
 	{
-		ts_uint32_t crc = 0xffffffff;
-		ts_byte_t* p = section->data;
+		tb_uint32_t crc = 0xffffffff;
+		tb_byte_t* p = section->data;
 
 		while (p < section->payload_end + 4)
 		{
@@ -153,27 +153,27 @@ ts_bool_t ts_section_valid_section(ts_section_t* section)
 			p++;
 		}
 
-		if (crc == 0) return TS_TRUE;
+		if (crc == 0) return TB_TRUE;
 		else
 		{
-			TS_DBG("Bad CRC_32 (0x%08x) !!!", crc);
-			return TS_FALSE;
+			ts_trace("Bad CRC_32 (0x%08x) !!!", crc);
+			return TB_FALSE;
 		}
 	}
 	else
 	{
 		/* No check to do if section_syntax_indicator is 0 */
-		return TS_TRUE;
+		return TB_TRUE;
 	}
 }
 #if 0
 // build the section based on the information in the structure.
 void ts_section_build_section(ts_section_t* section)
 {
-	TS_ASSERT(section);
+	ts_assert(section);
 	if (!section) return ;
 
-	ts_byte_t* p = section->data;
+	tb_byte_t* p = section->data;
 
 	// table_id
 	section->data[0] = section->table_id;
@@ -217,37 +217,37 @@ void ts_section_build_section(ts_section_t* section)
 		section->payload_end[3] = section->crc & 0xff;
 
 		// valid section
-		TS_ASSERT(TS_TRUE == ts_section_valid_section(section);
+		ts_assert(TB_TRUE == ts_section_valid_section(section);
 	}
 }
 #endif
 
 // continuity check
-static ts_bool_t ts_section_impl_continuity_check(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
+static tb_bool_t ts_section_impl_continuity_check(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 {
-	TS_ASSERT(ts_packet);
-	TS_ASSERT(sc_decoder);
-	if (!ts_packet || !sc_decoder) return TS_FALSE;
+	ts_assert(ts_packet);
+	ts_assert(sc_decoder);
+	if (!ts_packet || !sc_decoder) return TB_FALSE;
 	ts_header_t*	ts_header = &(ts_packet->header);
 
 	// process duplicated ts packet
 	if (sc_decoder->continuity_counter == (ts_header->continuity_counter + 1) & 0xF)
 	{
-		TS_DBG("ts duplicate (expected: %d, received: %d) for pid %d"
+		ts_trace("ts duplicate (expected: %d, received: %d) for pid %d"
 			  , sc_decoder->continuity_counter, ts_header->continuity_counter, ts_header->pid);
 
 		// discard this packet
-		return TS_FALSE;
+		return TB_FALSE;
 	}
 
 	// process discontinuous ts packet
 	if (sc_decoder->continuity_counter != ts_header->continuity_counter)
 	{
-		TS_DBG("ts discontinuity (expected: %d, received: %d) for pid %d"
+		ts_trace("ts discontinuity (expected: %d, received: %d) for pid %d"
 			  , sc_decoder->continuity_counter, ts_header->continuity_counter, ts_header->pid);
 
 		// is discontinuous
-		sc_decoder->is_discontinuous = TS_TRUE;
+		sc_decoder->is_discontinuous = TB_TRUE;
 
 		// discard current section
 		if (sc_decoder->current_section)
@@ -260,7 +260,7 @@ static ts_bool_t ts_section_impl_continuity_check(ts_packet_t* ts_packet, ts_sec
 	// next expected counter: counter++
 	sc_decoder->continuity_counter = (ts_header->continuity_counter + 1) & 0xF;
 
-	return TS_TRUE;
+	return TB_TRUE;
 }
 
 /* //////////////////////////////////////////////////////////////////
@@ -268,11 +268,11 @@ static ts_bool_t ts_section_impl_continuity_check(ts_packet_t* ts_packet, ts_sec
  */
 void ts_section_decoder_init(ts_section_decoder_t* sc_decoder)
 {
-	TS_ASSERT(sc_decoder);
+	ts_assert(sc_decoder);
 	if (!sc_decoder) return ;
 
 	sc_decoder->continuity_counter	= 0;
-	sc_decoder->is_discontinuous	= TS_FALSE;
+	sc_decoder->is_discontinuous	= TB_FALSE;
 	sc_decoder->current_section		= NULL;
 	sc_decoder->callback 			= NULL;
 	sc_decoder->cb_data 			= NULL;
@@ -280,20 +280,20 @@ void ts_section_decoder_init(ts_section_decoder_t* sc_decoder)
 
 void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 {
-	TS_ASSERT(ts_packet);
+	ts_assert(ts_packet);
 	if (!ts_packet) return ;
 
 	ts_data_t*			ts_data			= &(ts_packet->data);
 	ts_header_t*		ts_header		= &(ts_packet->header);
 	ts_payload_t*		ts_payload		= &(ts_packet->payload);
 
-	ts_byte_t* payload_data			= ts_payload->data;		// point to the payload data
-	ts_byte_t* new_section				= NULL;					// Beginning of the new section, updated to NULL when the new section is handled
-	ts_size_t	remaining_bytes			= 0;
+	tb_byte_t* payload_data			= ts_payload->data;		// point to the payload data
+	tb_byte_t* new_section				= NULL;					// Beginning of the new section, updated to NULL when the new section is handled
+	tb_size_t	remaining_bytes			= 0;
 	ts_section_t* section			= sc_decoder->current_section;
 
 	// continuity counter check
-	if (TS_FALSE == ts_section_impl_continuity_check(ts_packet, sc_decoder)) return ;
+	if (TB_FALSE == ts_section_impl_continuity_check(ts_packet, sc_decoder)) return ;
 
 	// the first packet in the section
 	if (ts_header->payload_unit_start_indicator)
@@ -307,7 +307,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 		if (!new_section) return ;
 
 		section = ts_section_create_section(TS_SECTION_MAX_SIZE);
-		TS_ASSERT(section);
+		ts_assert(section);
 		sc_decoder->current_section = section;
 
 		// update the position of payload data
@@ -318,7 +318,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 
 		// just need the header to know how long is the section
 		sc_decoder->processed_size = 3;			// need process header of section
-		sc_decoder->complete_header = TS_FALSE;	// the header hasn't been processed
+		sc_decoder->complete_header = TB_FALSE;	// the header hasn't been processed
 	}
 
 	// remaining bytes in the payload
@@ -337,18 +337,18 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 			remaining_bytes			-= sc_decoder->processed_size;
 
 			// process section table header
-			if (sc_decoder->complete_header == TS_FALSE)
+			if (sc_decoder->complete_header == TB_FALSE)
 			{
 				// need process remaining data in whole section
-				section->section_length = ts_get_bits(section->data, 0, 12, 12);
+				section->section_length = tb_bits_get_ubits32(section->data, 12, 12);
 				sc_decoder->processed_size = section->section_length;
 
-				sc_decoder->complete_header = TS_TRUE;
+				sc_decoder->complete_header = TB_TRUE;
 
 				// check that the section isn't too long
 				if (sc_decoder->processed_size > TS_SECTION_MAX_SIZE - 3)
 				{
-					TS_DBG("psi section too long");
+					ts_trace("psi section too long");
 					ts_section_destroy_section(section);
 					sc_decoder->current_section = NULL;
 
@@ -356,7 +356,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 					if (new_section)
 					{
 						section = ts_section_create_section(TS_SECTION_MAX_SIZE);
-						TS_ASSERT(section);
+						ts_assert(section);
 						sc_decoder->current_section = section;
 
 						// update the position of payload data
@@ -367,7 +367,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 
 						// just need the header to know how long is the section
 						sc_decoder->processed_size = 3;			// need process header of section
-						sc_decoder->complete_header = TS_FALSE;	// the header hasn't been processed
+						sc_decoder->complete_header = TB_FALSE;	// the header hasn't been processed
 
 						// remaining bytes in the payload
 						remaining_bytes = TS_PACKET_SIZE - (payload_data - ts_data->data);
@@ -377,26 +377,26 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 			}
 			else	// process the whole section
 			{
-				section->section_syntax_indicator = ts_get_bits(section->data, 0, 8, 1);
+				section->section_syntax_indicator = tb_bits_get_ubits32(section->data, 8, 1);
 
 				// update the end of the payload if CRC_32 is present
 				// payload_end points to the first byte of the CRC_32 field
 				if (section->section_syntax_indicator) section->payload_end -= 4;
 
 				// valid section using crc32
-				if (TS_TRUE == ts_section_valid_section(section))
+				if (TB_TRUE == ts_section_valid_section(section))
 				{
 					// the section is valid
 					section->table_id = section->data[0];
 					if (section->section_syntax_indicator)
 					{
 						// decode section
-						section->table_id_extension			= ts_get_bits(section->data, 0, 24, 16);
-						section->version_number				= ts_get_bits(section->data, 0, 42, 5);
-						section->current_next_indicator		= ts_get_bits(section->data, 0, 47, 1);
-						section->section_number				= ts_get_bits(section->data, 0, 48, 8);
-						section->last_section_number		= ts_get_bits(section->data, 0, 56, 8);
-						section->crc						= ts_get_bits(section->payload_end, 0, 0, 32);
+						section->table_id_extension			= tb_bits_get_ubits32(section->data, 24, 16);
+						section->version_number				= tb_bits_get_ubits32(section->data, 42, 5);
+						section->current_next_indicator		= tb_bits_get_ubits32(section->data, 47, 1);
+						section->section_number				= tb_bits_get_ubits32(section->data, 48, 8);
+						section->last_section_number		= tb_bits_get_ubits32(section->data, 56, 8);
+						section->crc						= tb_bits_get_ubits32(section->payload_end, 0, 32);
 
 						// points after the last_section_number field
 						section->payload_start				= section->data + 8;
@@ -422,7 +422,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 				}
 				else
 				{
-					TS_DBG("invalid section(pid:%x)", ts_header->pid);
+					ts_trace("invalid section(pid:%x)", ts_header->pid);
 					// the section isn't valid => trash it
 					ts_section_destroy_section(section);
 					sc_decoder->current_section = NULL;
@@ -438,7 +438,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 				if (new_section)
 				{
 					section = ts_section_create_section(TS_SECTION_MAX_SIZE);
-					TS_ASSERT(section);
+					ts_assert(section);
 					sc_decoder->current_section = section;
 
 					// update the position of payload data
@@ -449,7 +449,7 @@ void ts_section_decode(ts_packet_t* ts_packet, ts_section_decoder_t* sc_decoder)
 
 					// just need the header to know how long is the section
 					sc_decoder->processed_size = 3;			// need process header of section
-					sc_decoder->complete_header = TS_FALSE;	// the header hasn't been processed
+					sc_decoder->complete_header = TB_FALSE;	// the header hasn't been processed
 
 					// remaining bytes in the payload
 					remaining_bytes = TS_PACKET_SIZE - (payload_data - ts_data->data);

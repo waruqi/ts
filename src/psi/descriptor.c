@@ -7,13 +7,13 @@
  * inner implemention
  */
 // create a descriptor
-ts_descriptor_t* ts_descriptor_create_descriptor(ts_byte_t descriptor_tag, ts_byte_t descriptor_length, ts_byte_t* data)
+ts_descriptor_t* ts_descriptor_create_descriptor(tb_byte_t descriptor_tag, tb_byte_t descriptor_length, tb_byte_t* data)
 {
 	// allocate descriptor
 	ts_descriptor_t* descriptor = (ts_descriptor_t*)malloc(sizeof(ts_descriptor_t));
 	if (descriptor)
 	{
-		descriptor->data = (ts_byte_t*)malloc(descriptor_length * sizeof(ts_byte_t));
+		descriptor->data = (tb_byte_t*)malloc(descriptor_length * sizeof(tb_byte_t));
 		if (descriptor->data)
 		{
 			// init header

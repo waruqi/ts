@@ -2,6 +2,7 @@
 *.a
 *.b
 doc
+lib
 other
 bin
 ts

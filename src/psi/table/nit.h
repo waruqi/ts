@@ -21,8 +21,8 @@ extern "C" {
 // transport_stream description structure
 typedef struct __ts_table_nit_ts_t
 {
-	ts_uint_t						transport_stream_id;
-	ts_uint_t						original_network_id;
+	tb_uint_t						transport_stream_id;
+	tb_uint_t						original_network_id;
 	ts_descriptor_t*				descriptor_list;
 
 	struct __ts_table_nit_ts_t* 	next;

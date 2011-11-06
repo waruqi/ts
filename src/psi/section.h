@@ -57,25 +57,25 @@ extern "C" {
 typedef struct __ts_section_t
 {
 	// non-specific section data
-	ts_uint_t					table_id;
-	ts_uint_t					section_syntax_indicator;
-	ts_uint_t					section_length;
+	tb_uint_t					table_id;
+	tb_uint_t					section_syntax_indicator;
+	tb_uint_t					section_length;
 
 	// used if section_syntax_indicator is true
-	ts_uint_t					table_id_extension;
-	ts_uint_t					version_number;
-	ts_uint_t					current_next_indicator;
-	ts_uint_t					section_number;
-	ts_uint_t					last_section_number;
+	tb_uint_t					table_id_extension;
+	tb_uint_t					version_number;
+	tb_uint_t					current_next_indicator;
+	tb_uint_t					section_number;
+	tb_uint_t					last_section_number;
 
 	// non-specific section data
 	// the content is table-specific
-	ts_byte_t*					data;				//!< complete section
-	ts_byte_t*					payload_start;
-	ts_byte_t*					payload_end;
+	tb_byte_t*					data;				//!< complete section
+	tb_byte_t*					payload_start;
+	tb_byte_t*					payload_end;
 
 	// used if section_syntax_indicator is true
-	ts_uint32_t					crc;				//!< CRC_32
+	tb_uint32_t					crc;				//!< CRC_32
 
 	// next section,
 	// chain all sections in whole table for the convenience of free sections
@@ -97,11 +97,11 @@ typedef void (*ts_section_callback_t)(ts_packet_t* ts_packet, void* sc_decoder);
 typedef struct __ts_section_decoder_t
 {
 	// for decode section
-	ts_uint_t					continuity_counter;	// counter counter a section table
-	ts_bool_t					is_discontinuous;	// discontinuity
+	tb_uint_t					continuity_counter;	// counter counter a section table
+	tb_bool_t					is_discontinuous;	// discontinuity
 	ts_section_t*				current_section;	// current decoded section
-	ts_size_t					processed_size;		// next processed size
-	ts_bool_t					complete_header;	// whether header has been processed
+	tb_size_t					processed_size;		// next processed size
+	tb_bool_t					complete_header;	// whether header has been processed
 
 	// inner data, not use
 	ts_section_callback_t		callback;			// callback
@@ -113,9 +113,9 @@ typedef struct __ts_section_decoder_t
  */
 
 // section operations
-ts_section_t*			ts_section_create_section(ts_size_t max_size);
+ts_section_t*			ts_section_create_section(tb_size_t max_size);
 void					ts_section_destroy_section(ts_section_t* section);
-ts_bool_t				ts_section_valid_section(ts_section_t* section);
+tb_bool_t				ts_section_valid_section(ts_section_t* section);
 void					ts_section_build_section(ts_section_t* section);
 
 // decoder operations

@@ -14,7 +14,7 @@ extern "C" {
 // add a program
 static ts_epg_program_t* ts_epg_program_create(ts_epg_decoder_t* epg_decoder)
 {
-	TS_ASSERT(epg_decoder);
+	ts_assert(epg_decoder);
 	if (!epg_decoder) return NULL;
 
 	// create a new program
@@ -39,7 +39,7 @@ static ts_epg_program_t* ts_epg_program_create(ts_epg_decoder_t* epg_decoder)
 // destroy the all programs
 static void ts_epg_program_destroy_all(ts_epg_decoder_t* epg_decoder)
 {
-	TS_ASSERT(epg_decoder);
+	ts_assert(epg_decoder);
 	if (!epg_decoder) return ;
 
 	ts_epg_program_t* program = epg_decoder->program_list;
@@ -53,9 +53,9 @@ static void ts_epg_program_destroy_all(ts_epg_decoder_t* epg_decoder)
 }
 
 // find the program using service_id
-static ts_epg_program_t* ts_epg_program_find(ts_epg_decoder_t* epg_decoder, ts_uint_t service_id)
+static ts_epg_program_t* ts_epg_program_find(ts_epg_decoder_t* epg_decoder, tb_uint_t service_id)
 {
-	TS_ASSERT(epg_decoder);
+	ts_assert(epg_decoder);
 	if (!epg_decoder) return NULL;
 
 	ts_epg_program_t* program = epg_decoder->program_list;
@@ -71,7 +71,7 @@ static ts_epg_program_t* ts_epg_program_find(ts_epg_decoder_t* epg_decoder, ts_u
  */
 static ts_epg_tb_decoder_entry_t* ts_epg_tb_decoder_list_add(ts_epg_decoder_t* epg_decoder, ts_table_decoder_t* tb_decoder)
 {
-	TS_ASSERT(epg_decoder);
+	ts_assert(epg_decoder);
 	if (!epg_decoder) return NULL;
 
 	// create a new decoder entry
@@ -105,7 +105,7 @@ static ts_epg_tb_decoder_entry_t* ts_epg_tb_decoder_list_add(ts_epg_decoder_t* e
 }
 static void ts_epg_tb_decoder_list_destroy(ts_epg_decoder_t* epg_decoder)
 {
-	TS_ASSERT(epg_decoder);
+	ts_assert(epg_decoder);
 	if (!epg_decoder) return ;
 
 	ts_epg_tb_decoder_entry_t* entry = epg_decoder->tb_decoder_list;
@@ -143,7 +143,7 @@ static void ts_epg_tb_decoder_list_destroy(ts_epg_decoder_t* epg_decoder)
 // remove a new decoder from table decoder list header
 static void ts_epg_tb_decoder_list_remove(ts_epg_decoder_t* epg_decoder, ts_table_decoder_t* tb_decoder)
 {
-	TS_ASSERT(epg_decoder && tb_decoder);
+	ts_assert(epg_decoder && tb_decoder);
 	if (!epg_decoder || !tb_decoder) return ;
 
 	// create new entry and add to header
@@ -175,14 +175,14 @@ static void ts_epg_tb_decoder_list_remove(ts_epg_decoder_t* epg_decoder, ts_tabl
  */
 
 // callback declarations
-static ts_bool_t ts_table_pat_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
-static ts_bool_t ts_table_pmt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
-static ts_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
-static ts_bool_t ts_table_eit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
-static ts_bool_t ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
+static tb_bool_t ts_table_pat_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
+static tb_bool_t ts_table_pmt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
+static tb_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
+static tb_bool_t ts_table_eit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
+static tb_bool_t ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data);
 
 // pat callback
-static ts_bool_t ts_table_pat_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+static tb_bool_t ts_table_pat_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_pat_t*			pat				= (ts_table_pat_t*)table;
@@ -223,14 +223,14 @@ static ts_bool_t ts_table_pat_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	//destroy pat decoder
 	ts_table_pat_destroy_decoder(tb_decoder);
 
-	// not continue to decode next pat if return TS_FALSE
-	return TS_FALSE;	
+	// not continue to decode next pat if return TB_FALSE
+	return TB_FALSE;	
 #else
-	return TS_TRUE;	// continue
+	return TB_TRUE;	// continue
 #endif
 }
 // pmt callback
-static ts_bool_t ts_table_pmt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+static tb_bool_t ts_table_pmt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_pmt_t*			pmt				= (ts_table_pmt_t*)table;
@@ -279,11 +279,11 @@ static ts_bool_t ts_table_pmt_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	//destroy pmt decoder
 	ts_table_pmt_destroy_decoder(tb_decoder);
 
-	// not continue to decode next pmt if return TS_FALSE
-	return TS_FALSE;
+	// not continue to decode next pmt if return TB_FALSE
+	return TB_FALSE;
 }
 // sdt callback
-static ts_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+static tb_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_sdt_t*			sdt				= (ts_table_sdt_t*)table;
@@ -332,18 +332,18 @@ static ts_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	ts_epg_program_t* program = epg_decoder->program_list;
 	while (program)
 	{
-		ts_uint_t i = 0;
-		TS_PRINT("--------------------------------------");
-		TS_PRINT("program_number:%u service_id:%u", program->program_number, program->service_id);
-		TS_PRINT("--------------------------------------");
-		TS_PRINT("pid_pmt:%x",						program->pid_pmt);
-		TS_PRINT("pid_pcr:%x",						program->pid_pcr);
+		tb_uint_t i = 0;
+		ts_print("--------------------------------------");
+		ts_print("program_number:%u service_id:%u", program->program_number, program->service_id);
+		ts_print("--------------------------------------");
+		ts_print("pid_pmt:%x",						program->pid_pmt);
+		ts_print("pid_pcr:%x",						program->pid_pcr);
 		for (i = 0; i < program->pid_videos_n; ++i)
-			TS_PRINT("\tpid_video:%x",					program->pid_videos[i]);
+			ts_print("\tpid_video:%x",					program->pid_videos[i]);
 		for (i = 0; i < program->pid_audios_n; ++i)
-			TS_PRINT("\tpid_audio:%x",					program->pid_audios[i]);
-		TS_PRINT("program_name:%s", 				program->program_name);
-		TS_PRINT("program_provider_name:%s\n",		program->program_provider_name);
+			ts_print("\tpid_audio:%x",					program->pid_audios[i]);
+		ts_print("program_name:%s", 				program->program_name);
+		ts_print("program_provider_name:%s\n",		program->program_provider_name);
 		
 		program = program->next;
 	}
@@ -358,12 +358,12 @@ static ts_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	ts_epg_tb_decoder_list_destroy(epg_decoder);
 #endif
 	
-	// not continue to decode next sdt if return TS_FALSE
-	return TS_FALSE;
+	// not continue to decode next sdt if return TB_FALSE
+	return TB_FALSE;
 }
 
 // eit callback
-static ts_bool_t ts_table_eit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+static tb_bool_t ts_table_eit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_eit_t*			eit				= (ts_table_eit_t*)table;
@@ -385,11 +385,11 @@ static ts_bool_t ts_table_eit_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	//destroy eit decoder
 	ts_table_eit_destroy_decoder(tb_decoder);
 
-	// not continue to decode next eit if return TS_FALSE
-	return TS_FALSE;
+	// not continue to decode next eit if return TB_FALSE
+	return TB_FALSE;
 }
 // nit callback
-static ts_bool_t ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
+static tb_bool_t ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_header_t* table, void* cb_data)
 {
 	ts_table_header_t*	tb_header		= table;
 	ts_table_nit_t*			nit				= (ts_table_nit_t*)table;
@@ -411,8 +411,8 @@ static ts_bool_t ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	//destroy nit decoder
 	ts_table_nit_destroy_decoder(tb_decoder);
 
-	// not continue to decode next nit if return TS_FALSE
-	return TS_FALSE;
+	// not continue to decode next nit if return TB_FALSE
+	return TB_FALSE;
 }
 
 /* ////////////////////////////////////////////////////////////////////////
@@ -422,7 +422,7 @@ ts_epg_decoder_t* ts_epg_create_decoder()
 {
 	// allocate decoders
 	ts_epg_decoder_t* epg_decoder = (ts_epg_decoder_t*)malloc(sizeof(ts_epg_decoder_t));
-	TS_ASSERT(epg_decoder);
+	ts_assert(epg_decoder);
 
 	// init epg decoder
 	epg_decoder->ts_decoder			= ts_create_decoder();
@@ -452,30 +452,30 @@ void ts_epg_destroy_decoder(ts_epg_decoder_t* epg_decoder)
 	}
 }
 
-ts_bool_t ts_epg_decode(ts_packet_t* ts_packet, ts_epg_decoder_t* epg_decoder)
+tb_bool_t ts_epg_decode(ts_packet_t* ts_packet, ts_epg_decoder_t* epg_decoder)
 {
 	// not exists decoders
-	if (!epg_decoder || !epg_decoder->ts_decoder) return TS_FALSE;
+	if (!epg_decoder || !epg_decoder->ts_decoder) return TB_FALSE;
 
 	// decode packet
-	epg_decoder->ts_decoder->skip_adaptation = TS_TRUE;
-	if (TS_FALSE == ts_decode_packet(ts_packet, epg_decoder->ts_decoder)) return TS_FALSE;
+	epg_decoder->ts_decoder->skip_adaptation = TB_TRUE;
+	if (TB_FALSE == ts_decode_packet(ts_packet, epg_decoder->ts_decoder)) return TB_FALSE;
 
 	// empty packet filter
-	if (ts_packet->header.pid == TS_PID_NULL) return TS_TRUE;
+	if (ts_packet->header.pid == TS_PID_NULL) return TB_TRUE;
 
 	// decode tables
 	ts_epg_tb_decoder_entry_t* entry = epg_decoder->tb_decoder_list;
 	while (entry)
 	{
 		// decode this ts packet
-		if (entry->tb_decoder && TS_TRUE == ts_table_decode(ts_packet, entry->tb_decoder))
-			return TS_TRUE;
+		if (entry->tb_decoder && TB_TRUE == ts_table_decode(ts_packet, entry->tb_decoder))
+			return TB_TRUE;
 		entry = entry->next;
 	}
 
 	// no decoder processes it
-	return TS_FALSE;
+	return TB_FALSE;
 }
 
 

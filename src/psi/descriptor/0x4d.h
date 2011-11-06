@@ -28,11 +28,11 @@ extern "C" {
 // short event descriptior type
 typedef struct __ts_short_event_descriptor_t
 {
-	ts_char_t		iso_639_code[4];	//!< e.g. code:"fre" + '\0'
-	ts_size_t		event_name_length;
-	ts_char_t		event_name[TS_DESCRIPTOR_EVENT_NAME_MAX_SIZE];
-	ts_size_t		text_length;
-	ts_char_t		text[TS_DESCRIPTOR_EVENT_TEXT_MAX_SIZE];
+	tb_char_t		iso_639_code[4];	//!< e.g. code:"fre" + '\0'
+	tb_size_t		event_name_length;
+	tb_char_t		event_name[TS_DESCRIPTOR_EVENT_NAME_MAX_SIZE];
+	tb_size_t		text_length;
+	tb_char_t		text[TS_DESCRIPTOR_EVENT_TEXT_MAX_SIZE];
 
 }ts_short_event_descriptor_t;
 

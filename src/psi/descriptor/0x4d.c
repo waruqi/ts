@@ -14,14 +14,14 @@
 // decode short event a descriptor
 ts_short_event_descriptor_t* ts_short_event_descriptor_decode(ts_descriptor_t* dr)
 {
-	TS_ASSERT(dr);
+	ts_assert(dr);
 	if (!dr) return NULL;
 	ts_short_event_descriptor_t* p = NULL;
 
 	// check the tag
 	if (dr->descriptor_tag != TS_DESCRIPTOR_TAG_SHORT_EVENT_DESCRIPTOR)
 	{
-		TS_DBG("short_event_descriptor: bad tag (%#x)", dr->descriptor_tag);
+		ts_trace("short_event_descriptor: bad tag (%#x)", dr->descriptor_tag);
 		return NULL;
 	}
 
@@ -31,14 +31,14 @@ ts_short_event_descriptor_t* ts_short_event_descriptor_decode(ts_descriptor_t* d
 	// check the length
 	if (dr->descriptor_length < 5)
 	{
-		TS_DBG("short_event_descriptor: bad length (%d)", dr->descriptor_length);
+		ts_trace("short_event_descriptor: bad length (%d)", dr->descriptor_length);
 		return NULL;
 	}
 
 	// check data
 	if (!dr->data)
 	{
-		TS_DBG("short_event_descriptor: invalid data");
+		ts_trace("short_event_descriptor: invalid data");
 		return NULL;
 	}
 
@@ -46,7 +46,7 @@ ts_short_event_descriptor_t* ts_short_event_descriptor_decode(ts_descriptor_t* d
 	p = (ts_short_event_descriptor_t*)malloc(sizeof(ts_short_event_descriptor_t));
 	if (!p)
 	{
-		TS_DBG("short_event_descriptor: out of memory");
+		ts_trace("short_event_descriptor: out of memory");
 		return NULL;
 	}
 	

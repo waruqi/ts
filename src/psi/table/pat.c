@@ -17,9 +17,9 @@ extern "C" {
  */
 
 // add a program at the end of the pat.
-static ts_table_pat_program_t* ts_table_pat_add_program(ts_table_pat_t* pat, ts_uint_t program_number, ts_uint_t pid)
+static ts_table_pat_program_t* ts_table_pat_add_program(ts_table_pat_t* pat, tb_uint_t program_number, tb_uint_t pid)
 {
-	TS_ASSERT(pat);
+	ts_assert(pat);
 	if (!pat) return ;
 
 	// create a new program
@@ -49,7 +49,7 @@ static void* ts_table_pat_create(void* decoder, ts_section_t* sections)
 {
 	ts_table_pat_t* pat = (ts_table_pat_t*)malloc(sizeof(ts_table_pat_t));
 	ts_table_header_t* header = (ts_table_header_t*)pat;
-	TS_ASSERT(pat);
+	ts_assert(pat);
 
 	// init header
 	ts_section_t* section = sections;
@@ -74,7 +74,7 @@ static void* ts_table_pat_create(void* decoder, ts_section_t* sections)
 // empty the all programs
 static void ts_table_pat_empty(void* decoder, void* table)
 {
-	TS_ASSERT(table);
+	ts_assert(table);
 	if (!table) return ;
 	ts_table_pat_t* pat = (ts_table_pat_t*)table;
 
@@ -90,7 +90,7 @@ static void ts_table_pat_empty(void* decoder, void* table)
 // destroy pat
 static void ts_table_pat_destroy(void* decoder, void* table)
 {
-	TS_ASSERT(table);
+	ts_assert(table);
 	if (!table) return ;
 	ts_table_pat_t* pat = (ts_table_pat_t*)table;
 
@@ -100,19 +100,19 @@ static void ts_table_pat_destroy(void* decoder, void* table)
 // decode pat
 static void ts_table_pat_decode(void* decoder, void* table, ts_section_t* sections)
 {
-	TS_ASSERT(table && sections);
+	ts_assert(table && sections);
 	if (!table || !sections) return ;
 	ts_table_pat_t* pat = (ts_table_pat_t*)table;
 	ts_section_t* section = sections;
 
-	ts_byte_t* p;
+	tb_byte_t* p;
 	while (section)
 	{
 		// process all programs in this section
 		for (p = section->payload_start; p < section->payload_end; p += 4)
 		{
-			ts_uint_t program_number	= ts_get_bits(p, 0, 0, 16);
-			ts_uint_t pid				= ts_get_bits(p, 0, 19, 13);
+			tb_uint_t program_number	= tb_bits_get_ubits32(p, 0, 16);
+			tb_uint_t pid				= tb_bits_get_ubits32(p, 19, 13);
 
 			// add program to the program list of the pat
 			ts_table_pat_add_program(pat, program_number, pid);
@@ -123,29 +123,29 @@ static void ts_table_pat_decode(void* decoder, void* table, ts_section_t* sectio
 	}
 }
 // check section
-static ts_bool_t ts_table_pat_check(void* decoder, ts_section_t* section)
+static tb_bool_t ts_table_pat_check(void* decoder, ts_section_t* section)
 {
-	TS_ASSERT(decoder && section);
-	if (!decoder || !section) return TS_FALSE;
-	if (!section) return TS_FALSE;
+	ts_assert(decoder && section);
+	if (!decoder || !section) return TB_FALSE;
+	if (!section) return TB_FALSE;
 
 	// table_id must be 0x00 if is pat
 	if (section->table_id != 0x00)
 	{
 		// invalid table_id value
-		TS_DBG("invalid section (table_id == 0x%02x)", section->table_id);
-		return TS_FALSE;
+		ts_trace("invalid section (table_id == 0x%02x)", section->table_id);
+		return TB_FALSE;
 	}
 
 	// check section_syntax_indicator: must be 1
 	if (!section->section_syntax_indicator)
 	{
 		// invalid section_syntax_indicator
-		TS_DBG("invalid section (section_syntax_indicator == 0)");
-		return TS_FALSE;
+		ts_trace("invalid section (section_syntax_indicator == 0)");
+		return TB_FALSE;
 	}
 
-	return TS_TRUE;
+	return TB_TRUE;
 }
 
 /* //////////////////////////////////////////////////////////////////
@@ -184,32 +184,32 @@ void ts_table_pat_destroy_decoder(ts_table_pat_decoder_t* tb_pat_decoder)
 // dump pat info
 void ts_table_pat_dump(ts_packet_t* ts_packet, ts_table_pat_t* pat)
 {
-	TS_ASSERT(pat && ts_packet);
+	ts_assert(pat && ts_packet);
 	if (!pat || !ts_packet) return ;
 
 	ts_table_header_t* header = (ts_table_header_t*)pat;
-	TS_PRINT("----------------------------------------"									);
-	TS_PRINT("pat(pid:%x)",					ts_packet->header.pid						);
-	TS_PRINT("----------------------------------------"									);
-	TS_PRINT("table_id:%x",					header->table_id							);
-	TS_PRINT("section_syntax_indicator:%u",	header->section_syntax_indicator			);
-	TS_PRINT("section_length:%u",				header->section_length						);
-	TS_PRINT("transport_stream_id:%u",			header->table_id_extension					);
-	TS_PRINT("version_number:%u",				header->version_number						);
-	TS_PRINT("current_next_indicator:%u",		header->current_next_indicator				);
-	TS_PRINT("section_number:%u",				header->section_number						);
-	TS_PRINT("last_section_number:%u",			header->last_section_number					);
-	TS_PRINT("crc:%x",							header->crc									);
+	ts_print("----------------------------------------"									);
+	ts_print("pat(pid:%x)",					ts_packet->header.pid						);
+	ts_print("----------------------------------------"									);
+	ts_print("table_id:%x",					header->table_id							);
+	ts_print("section_syntax_indicator:%u",	header->section_syntax_indicator			);
+	ts_print("section_length:%u",				header->section_length						);
+	ts_print("transport_stream_id:%u",			header->table_id_extension					);
+	ts_print("version_number:%u",				header->version_number						);
+	ts_print("current_next_indicator:%u",		header->current_next_indicator				);
+	ts_print("section_number:%u",				header->section_number						);
+	ts_print("last_section_number:%u",			header->last_section_number					);
+	ts_print("crc:%x",							header->crc									);
 
 	ts_table_pat_program_t* program = pat->program_list;
 	while (program)
 	{
-		TS_PRINT("\tprogram_number:%u",		program->program_number);
-		TS_PRINT("\t%s pid:%x",				program->program_number == 0? "nit" : "pmt", program->pid);
+		ts_print("\tprogram_number:%u",		program->program_number);
+		ts_print("\t%s pid:%x",				program->program_number == 0? "nit" : "pmt", program->pid);
 
 		program = program->next;
 	}
-	TS_PRINT("========================================\n"										);
+	ts_print("========================================\n"										);
 }
 
 // extern "C" {

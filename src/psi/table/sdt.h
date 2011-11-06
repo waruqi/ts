@@ -21,11 +21,11 @@ extern "C" {
 // sdt service description structure
 typedef struct __ts_table_sdt_service_t
 {
-	ts_uint_t							service_id;
-	ts_uint_t							eit_schedule_flag;
-	ts_uint_t							eit_present_following_flag;
-	ts_uint_t							running_status;
-	ts_uint_t							free_ca_mode;
+	tb_uint_t							service_id;
+	tb_uint_t							eit_schedule_flag;
+	tb_uint_t							eit_present_following_flag;
+	tb_uint_t							running_status;
+	tb_uint_t							free_ca_mode;
 	ts_descriptor_t*					descriptor_list;
 
 	struct __ts_table_sdt_service_t* 	next;
@@ -39,7 +39,7 @@ typedef struct __ts_table_sdt_t
 	ts_table_header_t					table_header;	//!< \note table_id_extension is transport_stream_id
 
 	// specific data
-	ts_uint_t							original_network_id;
+	tb_uint_t							original_network_id;
 	ts_table_sdt_service_t*				service_list;
 
 }ts_table_sdt_t;

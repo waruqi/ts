@@ -25,11 +25,11 @@ extern "C" {
 typedef struct __ts_descriptor_t
 {
 	// descriptor header
-	ts_uint_t						descriptor_tag;
-	ts_uint_t						descriptor_length;
+	tb_uint_t						descriptor_tag;
+	tb_uint_t						descriptor_length;
 
 	// data
-	ts_byte_t*						data;
+	tb_byte_t*						data;
 
 	// next
 	struct __ts_descriptor_t*		next;
@@ -40,7 +40,7 @@ typedef struct __ts_descriptor_t
 /* ////////////////////////////////////////////////////////////////////////
  * interfaces
  */
-ts_descriptor_t*		ts_descriptor_create_descriptor(ts_byte_t descriptor_tag, ts_byte_t descriptor_length, ts_byte_t* data);
+ts_descriptor_t*		ts_descriptor_create_descriptor(tb_byte_t descriptor_tag, tb_byte_t descriptor_length, tb_byte_t* data);
 void					ts_descriptor_destroy_descriptors(ts_descriptor_t* descriptor_list);
 
 #	ifdef __cplusplus

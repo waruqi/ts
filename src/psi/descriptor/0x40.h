@@ -26,7 +26,7 @@ extern "C" {
 // network name descriptior type
 typedef struct __ts_network_name_descriptor_t
 {
-	ts_char_t		name[TS_DESCRIPTOR_NETWORK_NAME_MAX_SIZE];
+	tb_char_t		name[TS_DESCRIPTOR_NETWORK_NAME_MAX_SIZE];
 
 }ts_network_name_descriptor_t;
 

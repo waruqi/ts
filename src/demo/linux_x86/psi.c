@@ -66,7 +66,7 @@ void ts_table_nit_callback(void* tb_decoder, ts_packet_t* ts_packet, ts_table_he
 
 int main(int argc, char** argv)
 {
-	ts_int_t fd = open(argv[1], 0);
+	tb_int_t fd = open(argv[1], 0);
 	if (fd != -1)
 	{
 		ts_packet_t					ts_packet;
@@ -84,19 +84,19 @@ int main(int argc, char** argv)
 		ts_table_nit_decoder_t*		tb_nit_decoder	= ts_table_nit_create_decoder(&ts_table_nit_callback, NULL);
 
 		// read packet
-		while (TS_TRUE == ts_read_packet(fd, &ts_packet))
+		while (TB_TRUE == ts_read_packet(fd, &ts_packet))
 		{
 			// decode packet
-			ts_decoder->skip_adaptation = TS_TRUE;
-			if (TS_FALSE == ts_decode_packet(&ts_packet, ts_decoder)) continue;
+			ts_decoder->skip_adaptation = TB_TRUE;
+			if (TB_FALSE == ts_decode_packet(&ts_packet, ts_decoder)) continue;
 
 			if (ts_header->pid == TS_PID_NULL) continue;
 			// decode sections
-			if (TS_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_pat_decoder)) continue;
- 			if (TS_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_pmt_decoder)) continue;
- 			if (TS_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_sdt_decoder)) continue;
- 			if (TS_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_eit_decoder)) continue;
- 			if (TS_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_nit_decoder)) continue;
+			if (TB_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_pat_decoder)) continue;
+ 			if (TB_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_pmt_decoder)) continue;
+ 			if (TB_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_sdt_decoder)) continue;
+ 			if (TB_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_eit_decoder)) continue;
+ 			if (TB_TRUE == ts_table_decode(&ts_packet, (ts_table_decoder_t*)tb_nit_decoder)) continue;
 		}
 
 		ts_destroy_decoder(ts_decoder);

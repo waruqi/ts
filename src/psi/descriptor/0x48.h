@@ -27,11 +27,11 @@ extern "C" {
 // service descriptior type
 typedef struct __ts_service_descriptor_t
 {
-	ts_uint_t						service_type;
-	ts_size_t						service_provider_name_length;
-	ts_char_t						service_provider_name[TS_DESCRIPTOR_SERVICE_NAME_MAX_SIZE];
-	ts_size_t						service_name_length;
-	ts_char_t						service_name[TS_DESCRIPTOR_SERVICE_NAME_MAX_SIZE];
+	tb_uint_t						service_type;
+	tb_size_t						service_provider_name_length;
+	tb_char_t						service_provider_name[TS_DESCRIPTOR_SERVICE_NAME_MAX_SIZE];
+	tb_size_t						service_name_length;
+	tb_char_t						service_name[TS_DESCRIPTOR_SERVICE_NAME_MAX_SIZE];
 
 }ts_service_descriptor_t;
 

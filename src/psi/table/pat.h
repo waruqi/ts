@@ -23,8 +23,8 @@ extern "C" {
 // else pid is pmt
 typedef struct __ts_table_pat_program_t
 {
-	ts_uint_t							program_number;		//!< program_number
-	ts_uint_t							pid;				//!< pid of NIT/PMT
+	tb_uint_t							program_number;		//!< program_number
+	tb_uint_t							pid;				//!< pid of NIT/PMT
 
 	struct __ts_table_pat_program_t* 	next;				//!< next element of the list
 

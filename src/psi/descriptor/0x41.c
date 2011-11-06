@@ -14,13 +14,13 @@
 // decode service list descriptor
 ts_service_list_descriptor_t* ts_service_list_descriptor_decode(ts_descriptor_t* dr)
 {
-	TS_ASSERT(dr);
+	ts_assert(dr);
 	if (!dr) return NULL;
 
 	// check the tag
 	if (dr->descriptor_tag != TS_DESCRIPTOR_TAG_SERVICE_LIST_DESCRIPTOR)
 	{
-		TS_DBG("service list descriptor: bad tag (%#x)", dr->descriptor_tag);
+		ts_trace("service list descriptor: bad tag (%#x)", dr->descriptor_tag);
 		return NULL;
 	}
 
@@ -30,14 +30,14 @@ ts_service_list_descriptor_t* ts_service_list_descriptor_decode(ts_descriptor_t*
 	// check the length
 	if (dr->descriptor_length < 3)
 	{
-		TS_DBG("service list descriptor: bad length (%d)", dr->descriptor_length);
+		ts_trace("service list descriptor: bad length (%d)", dr->descriptor_length);
 		return NULL;
 	}
 
 	// check data
 	if (!dr->data)
 	{
-		TS_DBG("service list descriptor: invalid data");
+		ts_trace("service list descriptor: invalid data");
 		return NULL;
 	}
 
@@ -46,8 +46,8 @@ ts_service_list_descriptor_t* ts_service_list_descriptor_decode(ts_descriptor_t*
 	dr->decoded_dr = NULL;
 
 	// decode data
-	ts_byte_t* p = dr->data;
-	ts_byte_t* end = dr->data + dr->descriptor_length;
+	tb_byte_t* p = dr->data;
+	tb_byte_t* end = dr->data + dr->descriptor_length;
 	ts_service_list_descriptor_t* list = NULL;
 	for (; p + 3 < end; p += 3)
 	{
@@ -55,8 +55,8 @@ ts_service_list_descriptor_t* ts_service_list_descriptor_decode(ts_descriptor_t*
 		ts_service_list_descriptor_t* service = (ts_service_list_descriptor_t*)malloc(sizeof(ts_service_list_descriptor_t));
 		if (service)
 		{
-			service->service_id		= ts_get_bits(p, 0, 0, 16);
-			service->service_type	= ts_get_bits(p, 0, 16, 8);
+			service->service_id		= tb_bits_get_ubits32(p, 0, 16);
+			service->service_type	= tb_bits_get_ubits32(p, 16, 8);
 			service->next			= NULL;
 			
 			// add service to list

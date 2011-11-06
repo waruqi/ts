@@ -18,8 +18,8 @@ extern "C" {
 // (ISO/IEC 13818-1 section 2.4.4.8).
 typedef struct __ts_table_pmt_es_t
 {
-	ts_uint_t						stream_type;
-	ts_uint_t						elementary_pid;
+	tb_uint_t						stream_type;
+	tb_uint_t						elementary_pid;
 	ts_descriptor_t*				descriptor_list;
 	struct __ts_table_pmt_es_t*		next;
 
@@ -32,7 +32,7 @@ typedef struct __ts_table_pmt_t
 	ts_table_header_t	table_header;
 
 	// specific data
-	ts_uint_t			pcr_pid;
+	tb_uint_t			pcr_pid;
 	ts_descriptor_t*	descriptor_list;
 	ts_table_pmt_es_t*	es_list;
 
@@ -45,7 +45,7 @@ typedef struct __ts_table_pmt_decoder_t
 	ts_table_decoder_t	decoder_header;	//!< \note table_id_extension is program_number
 
 	// for invalidae
-	ts_uint_t			program_number;
+	tb_uint_t			program_number;
 
 }ts_table_pmt_decoder_t;
 
@@ -54,7 +54,7 @@ typedef struct __ts_table_pmt_decoder_t
  */
 
 // decoder operations
-ts_table_pmt_decoder_t*	ts_table_pmt_create_decoder(ts_uint_t pid, ts_uint_t program_number, ts_table_callback_t callback, void* cb_data);
+ts_table_pmt_decoder_t*	ts_table_pmt_create_decoder(tb_uint_t pid, tb_uint_t program_number, ts_table_callback_t callback, void* cb_data);
 void					ts_table_pmt_destroy_decoder(ts_table_pmt_decoder_t* tb_pmt_decoder);
 
 // dump pmt info

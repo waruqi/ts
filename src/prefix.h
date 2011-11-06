@@ -12,6 +12,9 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "config.h"
+#include "tbox/tbox.h"
+
 
 /* ////////////////////////////////////////////////////////////////////////
  * macros
@@ -22,24 +25,44 @@ extern "C" {
 # 	define TS_DEBUG
 #endif
 
-// debug
-#ifdef TS_DEBUG
-#	define TS_DBG(format, arg...)					do { printf("ts: " format "\n" , ## arg); } while (0)
-#	define TS_ASSERT(expr)							do { if (!(expr)) printf("ts assert failed at:%d: expr: %s file: %s\n", __LINE__, #expr, __FILE__); } while(0)
-#	define TS_MSG_ASSERT(expr, format, arg...)		do { if (!(expr)) printf("ts assert failed at:%d: expr: %s msg: " format " file: %s\n", __LINE__, #expr, ## arg, __FILE__); } while(0)
-#else
-#	define TS_DBG(format, arg...)
-#	define TS_ASSERT(expr)
-#	define TS_MSG_ASSERT(expr, format, arg...)
-#endif
-#define TS_PRINT(format, arg...)				do { printf("" format "\n" , ## arg); } while (0)
+// tag
+#define TS_TAG 											"ts"
 
-// return value
-#define	TS_TRUE					((ts_bool_t)(1))
-#define	TS_FALSE				((ts_bool_t)(0))
+// print
+#ifndef TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO
+# 	define ts_print(fmt, arg...)						tb_print_tag(TS_TAG, fmt, ## arg)
+#else
+#	define ts_print
+#endif
+
+// trace
+#ifndef TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO
+# 	define ts_trace(fmt, arg...)						tb_trace_tag(TS_TAG, fmt, ## arg)
+# 	define ts_trace_line(fmt, arg...) 					tb_trace_line_tag(TS_TAG, fmt, ## arg)
+#else
+# 	define ts_trace
+# 	define ts_trace_line
+#endif
+
+#define tb_trace_noimpl() 								ts_trace_line("[no_impl]: ")
+
+// assert
+#define ts_assert(x)									tb_assert_tag(TS_TAG, x)
+#define ts_assert_abort(x)								tb_assert_abort_tag(TS_TAG, x)
+#define ts_assert_return(x)								tb_assert_return_tag(TS_TAG, x)
+#define ts_assert_return_val(x, v)						tb_assert_return_val_tag(TS_TAG, x, v)
+#define ts_assert_goto(x, b)							tb_assert_goto_tag(TS_TAG, x, b)
+#define ts_assert_break(x)								tb_assert_break_tag(TS_TAG, x)
+#define ts_assert_continue(x)							tb_assert_continue_tag(TS_TAG, x)
+#define ts_assert_and_check_abort(x)					tb_assert_and_check_abort_tag(TS_TAG, x)
+#define ts_assert_and_check_return(x)					tb_assert_and_check_return_tag(TS_TAG, x)
+#define ts_assert_and_check_return_val(x, v)			tb_assert_and_check_return_val_tag(TS_TAG, x, v)
+#define ts_assert_and_check_goto(x, b)					tb_assert_and_check_goto_tag(TS_TAG, x, b)
+#define ts_assert_and_check_break(x)					tb_assert_and_check_break_tag(TS_TAG, x)
+#define ts_assert_and_check_continue(x)					tb_assert_and_check_continue_tag(TS_TAG, x)
 
 // pid
-#define TS_PID(p)				(((ts_uint16_t)(p[1] & 0x1f) << 8) + p[2])
+#define TS_PID(p)				(((tb_uint16_t)(p[1] & 0x1f) << 8) + p[2])
 #define TS_PID_PAT				(0x0000)
 #define TS_PID_CAT				(0x0001)
 #define TS_PID_TSDT				(0x0002)
@@ -55,9 +78,9 @@ extern "C" {
 #define TS_PID_NULL				(0x1fff)
 
 // utc time
-#define TS_UTC_H(utc)			((ts_uint_t)(((utc) >> 16) & 0xff))
-#define TS_UTC_M(utc)			((ts_uint_t)(((utc) >> 8) & 0xff))
-#define TS_UTC_S(utc)			((ts_uint_t)((utc) & 0xff))
+#define TS_UTC_H(utc)			((tb_uint_t)(((utc) >> 16) & 0xff))
+#define TS_UTC_M(utc)			((tb_uint_t)(((utc) >> 8) & 0xff))
+#define TS_UTC_S(utc)			((tb_uint_t)((utc) & 0xff))
 
 /*! mjd time
  *
@@ -72,38 +95,18 @@ extern "C" {
 	dumpf("%02d-%02d-%02d",y,m,d);
  * \endcode
  */
-#define TS_MJD_Y_(mjd)			((ts_uint_t)(((mjd)  - 15078.2) / 365.25))
-#define TS_MJD_K_(m)			((ts_uint_t)(((m) == 14 || (m) == 15) ? 1 : 0))
-#define TS_MJD_M_(mjd)			((ts_uint_t)(((mjd) - 14956.1 - (ts_uint_t)(TS_MJD_Y_(mjd) * 365.25) ) / 30.6001))
+#define TS_MJD_Y_(mjd)			((tb_uint_t)(((mjd)  - 15078.2) / 365.25))
+#define TS_MJD_K_(m)			((tb_uint_t)(((m) == 14 || (m) == 15) ? 1 : 0))
+#define TS_MJD_M_(mjd)			((tb_uint_t)(((mjd) - 14956.1 - (tb_uint_t)(TS_MJD_Y_(mjd) * 365.25) ) / 30.6001))
 
-#define TS_MJD_Y(mjd)			((ts_uint_t)(TS_MJD_Y_(mjd) + TS_MJD_K_(TS_MJD_M_(mjd)) + 1900))
-#define TS_MJD_M(mjd)			((ts_uint_t)(TS_MJD_M_(mjd) - 1 - TS_MJD_K_(TS_MJD_M_(mjd)) * 12))
-#define TS_MJD_D(mjd)			((ts_uint_t)((mjd) - 14956 - (ts_uint_t)(TS_MJD_Y_(mjd) * 365.25) - (ts_uint_t)(TS_MJD_M_(mjd) * 30.6001)))
+#define TS_MJD_Y(mjd)			((tb_uint_t)(TS_MJD_Y_(mjd) + TS_MJD_K_(TS_MJD_M_(mjd)) + 1900))
+#define TS_MJD_M(mjd)			((tb_uint_t)(TS_MJD_M_(mjd) - 1 - TS_MJD_K_(TS_MJD_M_(mjd)) * 12))
+#define TS_MJD_D(mjd)			((tb_uint_t)((mjd) - 14956 - (tb_uint_t)(TS_MJD_Y_(mjd) * 365.25) - (tb_uint_t)(TS_MJD_M_(mjd) * 30.6001)))
 
 // packet constants
 #define TS_PACKET_SIZE			(188)
 #define TS_HEADER_SIZE			(4)
 #define TS_SYNC_BYTE			(0x47)
-
-/* ////////////////////////////////////////////////////////////////////////
- * basic types
- */
-typedef signed int			ts_int_t;
-typedef unsigned int		ts_uint_t;
-typedef signed long			ts_long_t;
-typedef unsigned long		ts_ulong_t;
-typedef ts_int_t			ts_bool_t;
-typedef ts_uint_t			ts_size_t;
-typedef signed char			ts_int8_t;
-typedef unsigned char		ts_uint8_t;
-typedef signed short		ts_int16_t;
-typedef unsigned short		ts_uint16_t;
-typedef ts_int_t			ts_int32_t;
-typedef ts_uint_t			ts_uint32_t;
-typedef signed long long	ts_int64_t;
-typedef unsigned long long	ts_uint64_t;
-typedef ts_uint8_t			ts_byte_t;
-typedef char				ts_char_t;
 
 /*! brief packet_format
  *
@@ -259,79 +262,79 @@ typedef char				ts_char_t;
 typedef struct __ts_data_t
 {
 	// data info
-	ts_byte_t		data[TS_PACKET_SIZE];		// the ts packet data
-	ts_size_t		size;							// the ts packet size
+	tb_byte_t		data[TS_PACKET_SIZE];		// the ts packet data
+	tb_size_t		size;							// the ts packet size
 
 }ts_data_t;
 
 typedef struct __ts_header_t
 {
-	ts_uint_t		sync_byte;
-	ts_uint_t		transport_error_indicator;
-	ts_uint_t		payload_unit_start_indicator;
-	ts_uint_t		transport_priority;
-	ts_uint_t		pid;
-	ts_uint_t		transport_scrambling_control;
-	ts_uint_t		adaptation_field_control;
-	ts_uint_t		continuity_counter;
+	tb_uint_t		sync_byte;
+	tb_uint_t		transport_error_indicator;
+	tb_uint_t		payload_unit_start_indicator;
+	tb_uint_t		transport_priority;
+	tb_uint_t		pid;
+	tb_uint_t		transport_scrambling_control;
+	tb_uint_t		adaptation_field_control;
+	tb_uint_t		continuity_counter;
 
 }ts_header_t;
 
 typedef struct __ts_adaptation_t
 {
 	// adaptation field length
-	ts_uint_t 		adaptation_field_length;
+	tb_uint_t 		adaptation_field_length;
 
 	// indicators
-	ts_uint_t 		discontinuity_indicator;
-	ts_uint_t 		random_access_indicator;
-	ts_uint_t 		elementary_stream_priority_indicator;
+	tb_uint_t 		discontinuity_indicator;
+	tb_uint_t 		random_access_indicator;
+	tb_uint_t 		elementary_stream_priority_indicator;
 
 	// flags
-	ts_uint_t 		pcr_flag;
-	ts_uint_t 		opcr_flag;
-	ts_uint_t 		splicing_point_flag;
-	ts_uint_t 		transport_private_data_flag;
-	ts_uint_t 		adaptation_field_extension_flag;
+	tb_uint_t 		pcr_flag;
+	tb_uint_t 		opcr_flag;
+	tb_uint_t 		splicing_point_flag;
+	tb_uint_t 		transport_private_data_flag;
+	tb_uint_t 		adaptation_field_extension_flag;
 
 	// program clock reference
-	ts_uint64_t 	pcr_base;
-	ts_uint_t 		pcr_ext;
+	tb_uint64_t 	pcr_base;
+	tb_uint_t 		pcr_ext;
 
 	// original program clock reference
-	ts_uint64_t 	opcr_base;
-	ts_uint_t 		opcr_ext;
+	tb_uint64_t 	opcr_base;
+	tb_uint_t 		opcr_ext;
 
 	// splicing point
-	ts_uint_t 		splice_countdown;
+	tb_uint_t 		splice_countdown;
 
 	// transport private data
-	ts_uint_t 		transport_private_data_length;
-	ts_byte_t* 		private_data_byte;
+	tb_uint_t 		transport_private_data_length;
+	tb_byte_t* 		private_data_byte;
 
 	// adaptation field extension
-	ts_uint_t 		adaptation_field_extension_length;
-	ts_uint_t 		ltw_flag;
-	ts_uint_t 		piecewise_rate_flag;
-	ts_uint_t 		seamless_splice_flag;
+	tb_uint_t 		adaptation_field_extension_length;
+	tb_uint_t 		ltw_flag;
+	tb_uint_t 		piecewise_rate_flag;
+	tb_uint_t 		seamless_splice_flag;
 
 	// ltw
-	ts_uint_t 		ltw_valid_flag;
-	ts_uint_t 		ltw_offset;
+	tb_uint_t 		ltw_valid_flag;
+	tb_uint_t 		ltw_offset;
 
 	// piecewise_rate
-	ts_uint_t 		piecewise_rate;
+	tb_uint_t 		piecewise_rate;
 
 	// seamless_splice
-	ts_uint_t 		splice_type;
-	ts_uint64_t 	dts_next_au;
+	tb_uint_t 		splice_type;
+	tb_uint64_t 	dts_next_au;
 
 }ts_adaptation_t;
 
 typedef struct __ts_payload_t
 {
-	ts_byte_t*		data;
-	ts_size_t		size;
+	tb_byte_t*		data;
+	tb_size_t		size;
 
 }ts_payload_t;
 
@@ -344,15 +347,15 @@ typedef struct __ts_packet_t
 	ts_payload_t	payload;
 
 	// others
-	ts_uint_t 		pointer_field;
-	ts_bool_t		skip_adaptation;
+	tb_uint_t 		pointer_field;
+	tb_bool_t		skip_adaptation;
 
 }ts_packet_t;
 
 typedef struct __ts_decoder_t
 {
 	// skip adaptation filed
-	ts_bool_t		skip_adaptation;
+	tb_bool_t		skip_adaptation;
 
 }ts_decoder_t;
 
@@ -360,22 +363,23 @@ typedef struct __ts_decoder_t
  * bits
  */
 
+#if 0
 /*
   -- get bits out of buffer  (max 48 bit)
   -- extended bitrange, so it's slower
   -- return: value
  */
-static ts_uint64_t ts_get_bits48(ts_byte_t *data, ts_int_t byte_offset, ts_int_t bit_pos, ts_size_t bit_n)
+static tb_uint64_t ts_get_bits48(tb_byte_t *data, tb_int_t byte_offset, tb_int_t bit_pos, tb_size_t bit_n)
 {
-	ts_byte_t *b;
-	ts_uint64_t v;
-	ts_uint64_t mask;
-	ts_uint64_t tmp;
+	tb_byte_t *b;
+	tb_uint64_t v;
+	tb_uint64_t mask;
+	tb_uint64_t tmp;
 
 	if (bit_n > 48)
 	{
-		TS_DBG(" Error: ts_get_bits48() request out of bound!!!! (report!!)");
-		return 0xFEFEFEFEFEFEFEFELL;
+		ts_trace(" Error: ts_get_bits48() request out of bound!!!! (report!!)");
+		return 0xFEFEFEFEFEFEFEFEULL;
 	}
 
 
@@ -384,9 +388,9 @@ static ts_uint64_t ts_get_bits48(ts_byte_t *data, ts_int_t byte_offset, ts_int_t
 
 
 	// -- safe is 48 bitlen
-	tmp = (ts_uint64_t)(
-	 ((ts_uint64_t)*(b) << 48) + ((ts_uint64_t)*(b + 1) << 40) +
-	 ((ts_uint64_t)*(b + 2) << 32) + ((ts_uint64_t)*(b + 3) << 24) +
+	tmp = (tb_uint64_t)(
+	 ((tb_uint64_t)*(b) << 48) + ((tb_uint64_t)*(b + 1) << 40) +
+	 ((tb_uint64_t)*(b + 2) << 32) + ((tb_uint64_t)*(b + 3) << 24) +
 	 (*(b + 4) << 16) + (*(b + 5) << 8) + *(b + 6) );
 
 	bit_pos		= 56 - bit_pos - bit_n;
@@ -401,13 +405,13 @@ static ts_uint64_t ts_get_bits48(ts_byte_t *data, ts_int_t byte_offset, ts_int_t
   -- get bits out of buffer (max 32 bit!!!)
   -- return: value
 */
-static ts_ulong_t ts_get_bits(ts_byte_t *data, ts_int_t byte_offset, ts_int_t bit_pos, ts_size_t bit_n)
+static tb_ulong_t ts_get_bits(tb_byte_t *data, tb_int_t byte_offset, tb_int_t bit_pos, tb_size_t bit_n)
 {
-	ts_byte_t*		b;
-	ts_ulong_t		v;
-	ts_ulong_t		mask;
-	ts_ulong_t		tmp_long;
-	ts_int_t		bit_high;
+	tb_byte_t*		b;
+	tb_ulong_t		v;
+	tb_ulong_t		mask;
+	tb_ulong_t		tmp_long;
+	tb_int_t		bit_high;
 
 	b = &data[byte_offset + (bit_pos >> 3)];
 	bit_pos %= 8;
@@ -419,28 +423,28 @@ static ts_ulong_t ts_get_bits(ts_byte_t *data, ts_int_t byte_offset, ts_int_t bi
 			break;
 
 		case 0:		// -- 1..8 bit
-			tmp_long = (ts_ulong_t)((*(b) << 8) + *(b + 1));
+			tmp_long = (tb_ulong_t)((*(b) << 8) + *(b + 1));
 			bit_high = 16;
 			break;
 
 		case 1:		// -- 9..16 bit
-			tmp_long = (ts_ulong_t)((*(b) <<16) + (*(b + 1) << 8) + *(b + 2));
+			tmp_long = (tb_ulong_t)((*(b) <<16) + (*(b + 1) << 8) + *(b + 2));
 			bit_high = 24;
 			break;
 
 		case 2:		// -- 17..24 bit
-			tmp_long = (ts_ulong_t)((*(b) << 24) + (*(b + 1) << 16) + (*(b + 2) << 8) + *(b + 3));
+			tmp_long = (tb_ulong_t)((*(b) << 24) + (*(b + 1) << 16) + (*(b + 2) << 8) + *(b + 3));
 			bit_high = 32;
 			break;
 
 		case 3:		// -- 25..32 bit
 			// -- to be safe, we need 32+8 bit as shift range
-			return (ts_ulong_t)ts_get_bits48(b, 0, bit_pos, bit_n);
+			return (tb_ulong_t)ts_get_bits48(b, 0, bit_pos, bit_n);
 			break;
 
 		default:	// -- 33.. bits: fail, deliver constant fail value
-			TS_DBG(" Error: ts_get_bits() request out of bound!!!! (report!!)");
-			return (ts_ulong_t)0xFEFEFEFE;
+			ts_trace(" Error: ts_get_bits() request out of bound!!!! (report!!)");
+			return (tb_ulong_t)0xFEFEFEFE;
 			break;
 	}
 
@@ -451,6 +455,7 @@ static ts_ulong_t ts_get_bits(ts_byte_t *data, ts_int_t byte_offset, ts_int_t bi
 
 	return v;
 }
+#endif
 
 // "C" {
 #	ifdef __cplusplus
