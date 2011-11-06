@@ -130,7 +130,7 @@ static void* ts_table_pmt_create(void* decoder, ts_section_t* sections)
 {
 	ts_table_pmt_t* pmt = (ts_table_pmt_t*)malloc(sizeof(ts_table_pmt_t));
 	ts_table_header_t* header = (ts_table_header_t*)pmt;
-	ts_assert(pmt);
+	tb_assert(pmt);
 
 	// init header
 	ts_section_t* section = sections;
@@ -159,7 +159,7 @@ static void* ts_table_pmt_create(void* decoder, ts_section_t* sections)
 // empty the all programs
 static void ts_table_pmt_empty(void* decoder, void* table)
 {
-	ts_assert(table);
+	tb_assert(table);
 	if (!table) return ;
 	ts_table_pmt_t* pmt = (ts_table_pmt_t*)table;
 	ts_table_pmt_es_t* es = pmt->es_list;
@@ -184,7 +184,7 @@ static void ts_table_pmt_empty(void* decoder, void* table)
 // destroy pmt
 static void ts_table_pmt_destroy(void* decoder, void* table)
 {
-	ts_assert(table);
+	tb_assert(table);
 	if (!table) return ;
 	ts_table_pmt_t* pmt = (ts_table_pmt_t*)table;
 
@@ -194,7 +194,7 @@ static void ts_table_pmt_destroy(void* decoder, void* table)
 // decode pmt
 static void ts_table_pmt_decode(void* decoder, void* table, ts_section_t* sections)
 {
-	ts_assert(table && sections);
+	tb_assert(table && sections);
 	if (!table || !sections) return ;
 	ts_table_pmt_t* pmt = (ts_table_pmt_t*)table;
 	ts_section_t* section = sections;
@@ -252,7 +252,7 @@ static void ts_table_pmt_decode(void* decoder, void* table, ts_section_t* sectio
 // check section
 static tb_bool_t ts_table_pmt_check(void* decoder, ts_section_t* section)
 {
-	ts_assert(decoder && section);
+	tb_assert(decoder && section);
 	if (!decoder || !section) return TB_FALSE;
 	ts_table_pmt_decoder_t* tb_pmt_decoder = (ts_table_pmt_decoder_t*)decoder;
 
@@ -260,7 +260,7 @@ static tb_bool_t ts_table_pmt_check(void* decoder, ts_section_t* section)
 	if (section->table_id != 0x02)
 	{
 		// invalid table_id value
-		ts_trace("invalid section (table_id == 0x%02x)", section->table_id);
+		tb_trace("invalid section (table_id == 0x%02x)", section->table_id);
 		return TB_FALSE;
 	}
 
@@ -268,7 +268,7 @@ static tb_bool_t ts_table_pmt_check(void* decoder, ts_section_t* section)
 	if (!section->section_syntax_indicator)
 	{
 		// invalid section_syntax_indicator
-		ts_trace("invalid section (section_syntax_indicator == 0)");
+		tb_trace("invalid section (section_syntax_indicator == 0)");
 		return TB_FALSE;
 	}
 
@@ -276,7 +276,7 @@ static tb_bool_t ts_table_pmt_check(void* decoder, ts_section_t* section)
 	if (tb_pmt_decoder->program_number != section->table_id_extension)
 	{
 		// invalid section_syntax_indicator
-		ts_trace("invalid section: 'program_number' don't match(pmt:%u section:%u)", tb_pmt_decoder->program_number, section->table_id_extension);
+		tb_trace("invalid section: 'program_number' don't match(pmt:%u section:%u)", tb_pmt_decoder->program_number, section->table_id_extension);
 		return TB_FALSE;
 	}
 
@@ -321,29 +321,29 @@ void ts_table_pmt_destroy_decoder(ts_table_pmt_decoder_t* tb_pmt_decoder)
 // dump pmt info
 void ts_table_pmt_dump(ts_packet_t* ts_packet, ts_table_pmt_t* pmt)
 {
-	ts_assert(pmt && ts_packet);
+	tb_assert(pmt && ts_packet);
 	if (!pmt || !ts_packet) return ;
 
 	ts_table_header_t* header = (ts_table_header_t*)pmt;
-	ts_print("----------------------------------------"									);
-	ts_print("pmt(pid:%x)",					ts_packet->header.pid						);
-	ts_print("----------------------------------------"									);
-	ts_print("table_id:%x",					header->table_id							);
-	ts_print("section_syntax_indicator:%u",	header->section_syntax_indicator			);
-	ts_print("section_length:%u",				header->section_length						);
-	ts_print("program_number:%u",				header->table_id_extension					);
-	ts_print("version_number:%u",				header->version_number						);
-	ts_print("current_next_indicator:%u",		header->current_next_indicator				);
-	ts_print("section_number:%u",				header->section_number						);
-	ts_print("last_section_number:%u",			header->last_section_number					);
-	ts_print("crc:%x",							header->crc									);
-	ts_print("pcr_pid:%x",						pmt->pcr_pid								);
+	tb_print("----------------------------------------"									);
+	tb_print("pmt(pid:%x)",					ts_packet->header.pid						);
+	tb_print("----------------------------------------"									);
+	tb_print("table_id:%x",					header->table_id							);
+	tb_print("section_syntax_indicator:%u",	header->section_syntax_indicator			);
+	tb_print("section_length:%u",				header->section_length						);
+	tb_print("program_number:%u",				header->table_id_extension					);
+	tb_print("version_number:%u",				header->version_number						);
+	tb_print("current_next_indicator:%u",		header->current_next_indicator				);
+	tb_print("section_number:%u",				header->section_number						);
+	tb_print("last_section_number:%u",			header->last_section_number					);
+	tb_print("crc:%x",							header->crc									);
+	tb_print("pcr_pid:%x",						pmt->pcr_pid								);
 
 	ts_descriptor_t* descriptor = pmt->descriptor_list;
 	while (descriptor)
 	{
-		ts_print("\tdescriptor_tag:%u",		descriptor->descriptor_tag					);
-		ts_print("\tdescriptor_length:%x",		descriptor->descriptor_length				);
+		tb_print("\tdescriptor_tag:%u",		descriptor->descriptor_tag					);
+		tb_print("\tdescriptor_length:%x",		descriptor->descriptor_length				);
 
 		descriptor = descriptor->next;
 	}
@@ -352,14 +352,14 @@ void ts_table_pmt_dump(ts_packet_t* ts_packet, ts_table_pmt_t* pmt)
 	ts_table_pmt_es_t* es = pmt->es_list;
 	while(es)
 	{
-		ts_print("\tes stream_type:%u => %s",		es->stream_type, ts_table_pmt_guess_es_stream(es->stream_type)->str);
-		ts_print("\tes elementary_pid:%x\n",		es->elementary_pid						);
+		tb_print("\tes stream_type:%u => %s",		es->stream_type, ts_table_pmt_guess_es_stream(es->stream_type)->str);
+		tb_print("\tes elementary_pid:%x\n",		es->elementary_pid						);
 
 		descriptor = es->descriptor_list;
 		while (descriptor)
 		{
-			ts_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag				);
-			ts_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length			);
+			tb_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag				);
+			tb_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length			);
 
 			descriptor = descriptor->next;
 		}
@@ -367,7 +367,7 @@ void ts_table_pmt_dump(ts_packet_t* ts_packet, ts_table_pmt_t* pmt)
 		es = es->next;
 	}
 
-	ts_print("========================================\n"										);
+	tb_print("========================================\n"										);
 }
 
 // extern "C" {

@@ -86,7 +86,7 @@ static void* ts_table_nit_create(void* decoder, ts_section_t* sections)
 {
 	ts_table_nit_t* nit = (ts_table_nit_t*)malloc(sizeof(ts_table_nit_t));
 	ts_table_header_t* header = (ts_table_header_t*)nit;
-	ts_assert(nit);
+	tb_assert(nit);
 
 	// init header
 	ts_section_t* section = sections;
@@ -112,7 +112,7 @@ static void* ts_table_nit_create(void* decoder, ts_section_t* sections)
 // empty the all programs
 static void ts_table_nit_empty(void* decoder, void* table)
 {
-	ts_assert(table);
+	tb_assert(table);
 	if (!table) return ;
 	ts_table_nit_t* nit = (ts_table_nit_t*)table;
 	ts_table_nit_ts_t* ts = nit->ts_list;
@@ -137,7 +137,7 @@ static void ts_table_nit_empty(void* decoder, void* table)
 // destroy nit
 static void ts_table_nit_destroy(void* decoder, void* table)
 {
-	ts_assert(table);
+	tb_assert(table);
 	if (!table) return ;
 	ts_table_nit_t* nit = (ts_table_nit_t*)table;
 
@@ -147,7 +147,7 @@ static void ts_table_nit_destroy(void* decoder, void* table)
 // decode nit
 static void ts_table_nit_decode(void* decoder, void* table, ts_section_t* sections)
 {
-	ts_assert(table && sections);
+	tb_assert(table && sections);
 	if (!table || !sections) return ;
 	ts_table_nit_t* nit = (ts_table_nit_t*)table;
 	ts_section_t* section = sections;
@@ -209,7 +209,7 @@ static void ts_table_nit_decode(void* decoder, void* table, ts_section_t* sectio
 // check section
 static tb_bool_t ts_table_nit_check(void* decoder, ts_section_t* section)
 {
-	ts_assert(decoder && section);
+	tb_assert(decoder && section);
 	if (!decoder || !section) return TB_FALSE;
 	if (!section) return TB_FALSE;
 
@@ -217,7 +217,7 @@ static tb_bool_t ts_table_nit_check(void* decoder, ts_section_t* section)
 	if (!section->section_syntax_indicator)
 	{
 		// invalid section_syntax_indicator
-		ts_trace("invalid section (section_syntax_indicator == 0)");
+		tb_trace("invalid section (section_syntax_indicator == 0)");
 		return TB_FALSE;
 	}
 
@@ -260,33 +260,33 @@ void ts_table_nit_destroy_decoder(ts_table_nit_decoder_t* tb_nit_decoder)
 // dump nit info
 void ts_table_nit_dump(ts_packet_t* ts_packet, ts_table_nit_t* nit)
 {
-	ts_assert(nit && ts_packet);
+	tb_assert(nit && ts_packet);
 	if (!nit || !ts_packet) return ;
 
 	ts_table_header_t* header = (ts_table_header_t*)nit;
-	ts_print("----------------------------------------"										);
-	ts_print("nit(pid:%x)",						ts_packet->header.pid						);
-	ts_print("----------------------------------------"										);
-	ts_print("table_id:%x",						header->table_id							);
-	ts_print("section_syntax_indicator:%u",		header->section_syntax_indicator			);
-	ts_print("section_length:%u",				header->section_length						);
-	ts_print("network_id:%x",					header->table_id_extension					);
-	ts_print("version_number:%u",				header->version_number						);
-	ts_print("current_next_indicator:%u",		header->current_next_indicator				);
-	ts_print("section_number:%u",				header->section_number						);
-	ts_print("last_section_number:%u",			header->last_section_number					);
-	ts_print("crc:%x",							header->crc									);
+	tb_print("----------------------------------------"										);
+	tb_print("nit(pid:%x)",						ts_packet->header.pid						);
+	tb_print("----------------------------------------"										);
+	tb_print("table_id:%x",						header->table_id							);
+	tb_print("section_syntax_indicator:%u",		header->section_syntax_indicator			);
+	tb_print("section_length:%u",				header->section_length						);
+	tb_print("network_id:%x",					header->table_id_extension					);
+	tb_print("version_number:%u",				header->version_number						);
+	tb_print("current_next_indicator:%u",		header->current_next_indicator				);
+	tb_print("section_number:%u",				header->section_number						);
+	tb_print("last_section_number:%u",			header->last_section_number					);
+	tb_print("crc:%x",							header->crc									);
 
 	ts_descriptor_t* descriptor = nit->descriptor_list;
 	while (descriptor)
 	{
-		ts_print("\tdescriptor_tag:%x",			descriptor->descriptor_tag					);
-		ts_print("\tdescriptor_length:%x\n",	descriptor->descriptor_length				);
+		tb_print("\tdescriptor_tag:%x",			descriptor->descriptor_tag					);
+		tb_print("\tdescriptor_length:%x\n",	descriptor->descriptor_length				);
 
 		if (descriptor->descriptor_tag == TS_DESCRIPTOR_TAG_NETWORK_NAME_DESCRIPTOR)
 		{
 			ts_network_name_descriptor_t* network_name = ts_network_name_descriptor_decode(descriptor);
-			ts_print("\tnetwork_name: %s\n",	network_name->name							);
+			tb_print("\tnetwork_name: %s\n",	network_name->name							);
 		}
 
 		descriptor = descriptor->next;
@@ -296,14 +296,14 @@ void ts_table_nit_dump(ts_packet_t* ts_packet, ts_table_nit_t* nit)
 	ts_table_nit_ts_t* ts = nit->ts_list;
 	while(ts)
 	{
-		ts_print("\tes transport_stream_id:%x",		ts->transport_stream_id				);
-		ts_print("\tes original_network_id:%x\n",	ts->original_network_id				);
+		tb_print("\tes transport_stream_id:%x",		ts->transport_stream_id				);
+		tb_print("\tes original_network_id:%x\n",	ts->original_network_id				);
 
 		descriptor = ts->descriptor_list;
 		while (descriptor)
 		{
-			ts_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag				);
-			ts_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length			);
+			tb_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag				);
+			tb_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length			);
 
 			if (descriptor->descriptor_tag == TS_DESCRIPTOR_TAG_SERVICE_LIST_DESCRIPTOR)
 			{
@@ -311,8 +311,8 @@ void ts_table_nit_dump(ts_packet_t* ts_packet, ts_table_nit_t* nit)
 				ts_service_list_descriptor_t* service = service_list;
 				while (service)
 				{
-					ts_print("\t\tservice_id:%u",		service->service_id					);
-					ts_print("\t\tservice_type:%x\n",	service->service_type				);
+					tb_print("\t\tservice_id:%u",		service->service_id					);
+					tb_print("\t\tservice_type:%x\n",	service->service_type				);
 					service = service->next;
 				}
 				ts_service_list_descriptor_destroy(service_list);
@@ -323,7 +323,7 @@ void ts_table_nit_dump(ts_packet_t* ts_packet, ts_table_nit_t* nit)
 		ts = ts->next;
 	}
 
-	ts_print("========================================\n"										);
+	tb_print("========================================\n"										);
 }
 
 // extern "C" {

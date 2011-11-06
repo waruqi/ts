@@ -14,7 +14,7 @@ extern "C" {
 // add a program
 static ts_epg_program_t* ts_epg_program_create(ts_epg_decoder_t* epg_decoder)
 {
-	ts_assert(epg_decoder);
+	tb_assert(epg_decoder);
 	if (!epg_decoder) return NULL;
 
 	// create a new program
@@ -39,7 +39,7 @@ static ts_epg_program_t* ts_epg_program_create(ts_epg_decoder_t* epg_decoder)
 // destroy the all programs
 static void ts_epg_program_destroy_all(ts_epg_decoder_t* epg_decoder)
 {
-	ts_assert(epg_decoder);
+	tb_assert(epg_decoder);
 	if (!epg_decoder) return ;
 
 	ts_epg_program_t* program = epg_decoder->program_list;
@@ -55,7 +55,7 @@ static void ts_epg_program_destroy_all(ts_epg_decoder_t* epg_decoder)
 // find the program using service_id
 static ts_epg_program_t* ts_epg_program_find(ts_epg_decoder_t* epg_decoder, tb_uint_t service_id)
 {
-	ts_assert(epg_decoder);
+	tb_assert(epg_decoder);
 	if (!epg_decoder) return NULL;
 
 	ts_epg_program_t* program = epg_decoder->program_list;
@@ -71,7 +71,7 @@ static ts_epg_program_t* ts_epg_program_find(ts_epg_decoder_t* epg_decoder, tb_u
  */
 static ts_epg_tb_decoder_entry_t* ts_epg_tb_decoder_list_add(ts_epg_decoder_t* epg_decoder, ts_table_decoder_t* tb_decoder)
 {
-	ts_assert(epg_decoder);
+	tb_assert(epg_decoder);
 	if (!epg_decoder) return NULL;
 
 	// create a new decoder entry
@@ -105,7 +105,7 @@ static ts_epg_tb_decoder_entry_t* ts_epg_tb_decoder_list_add(ts_epg_decoder_t* e
 }
 static void ts_epg_tb_decoder_list_destroy(ts_epg_decoder_t* epg_decoder)
 {
-	ts_assert(epg_decoder);
+	tb_assert(epg_decoder);
 	if (!epg_decoder) return ;
 
 	ts_epg_tb_decoder_entry_t* entry = epg_decoder->tb_decoder_list;
@@ -143,7 +143,7 @@ static void ts_epg_tb_decoder_list_destroy(ts_epg_decoder_t* epg_decoder)
 // remove a new decoder from table decoder list header
 static void ts_epg_tb_decoder_list_remove(ts_epg_decoder_t* epg_decoder, ts_table_decoder_t* tb_decoder)
 {
-	ts_assert(epg_decoder && tb_decoder);
+	tb_assert(epg_decoder && tb_decoder);
 	if (!epg_decoder || !tb_decoder) return ;
 
 	// create new entry and add to header
@@ -333,17 +333,17 @@ static tb_bool_t ts_table_sdt_callback(void* tb_decoder, ts_packet_t* ts_packet,
 	while (program)
 	{
 		tb_uint_t i = 0;
-		ts_print("--------------------------------------");
-		ts_print("program_number:%u service_id:%u", program->program_number, program->service_id);
-		ts_print("--------------------------------------");
-		ts_print("pid_pmt:%x",						program->pid_pmt);
-		ts_print("pid_pcr:%x",						program->pid_pcr);
+		tb_print("--------------------------------------");
+		tb_print("program_number:%u service_id:%u", program->program_number, program->service_id);
+		tb_print("--------------------------------------");
+		tb_print("pid_pmt:%x",						program->pid_pmt);
+		tb_print("pid_pcr:%x",						program->pid_pcr);
 		for (i = 0; i < program->pid_videos_n; ++i)
-			ts_print("\tpid_video:%x",					program->pid_videos[i]);
+			tb_print("\tpid_video:%x",					program->pid_videos[i]);
 		for (i = 0; i < program->pid_audios_n; ++i)
-			ts_print("\tpid_audio:%x",					program->pid_audios[i]);
-		ts_print("program_name:%s", 				program->program_name);
-		ts_print("program_provider_name:%s\n",		program->program_provider_name);
+			tb_print("\tpid_audio:%x",					program->pid_audios[i]);
+		tb_print("program_name:%s", 				program->program_name);
+		tb_print("program_provider_name:%s\n",		program->program_provider_name);
 		
 		program = program->next;
 	}
@@ -422,7 +422,7 @@ ts_epg_decoder_t* ts_epg_create_decoder()
 {
 	// allocate decoders
 	ts_epg_decoder_t* epg_decoder = (ts_epg_decoder_t*)malloc(sizeof(ts_epg_decoder_t));
-	ts_assert(epg_decoder);
+	tb_assert(epg_decoder);
 
 	// init epg decoder
 	epg_decoder->ts_decoder			= ts_create_decoder();

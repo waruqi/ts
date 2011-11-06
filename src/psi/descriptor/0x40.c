@@ -14,13 +14,13 @@
 // decode network name descriptor
 ts_network_name_descriptor_t* ts_network_name_descriptor_decode(ts_descriptor_t* dr)
 {
-	ts_assert(dr);
+	tb_assert(dr);
 	if (!dr) return NULL;
 
 	// check the tag
 	if (dr->descriptor_tag != TS_DESCRIPTOR_TAG_NETWORK_NAME_DESCRIPTOR)
 	{
-		ts_trace("network name descriptor: bad tag (%#x)", dr->descriptor_tag);
+		tb_trace("network name descriptor: bad tag (%#x)", dr->descriptor_tag);
 		return NULL;
 	}
 
@@ -30,14 +30,14 @@ ts_network_name_descriptor_t* ts_network_name_descriptor_decode(ts_descriptor_t*
 	// check the length
 	if (dr->descriptor_length <= 0)
 	{
-		ts_trace("network name descriptor: bad length (%d)", dr->descriptor_length);
+		tb_trace("network name descriptor: bad length (%d)", dr->descriptor_length);
 		return NULL;
 	}
 
 	// check data
 	if (!dr->data)
 	{
-		ts_trace("network name descriptor: invalid data");
+		tb_trace("network name descriptor: invalid data");
 		return NULL;
 	}
 
@@ -45,7 +45,7 @@ ts_network_name_descriptor_t* ts_network_name_descriptor_decode(ts_descriptor_t*
 	ts_network_name_descriptor_t* p = (ts_network_name_descriptor_t*)malloc(sizeof(ts_network_name_descriptor_t));
 	if (!p)
 	{
-		ts_trace("network name descriptor: out of memory");
+		tb_trace("network name descriptor: out of memory");
 		return NULL;
 	}
 

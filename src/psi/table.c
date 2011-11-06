@@ -22,13 +22,13 @@ static ts_table_id_t ts_table_guess_table_id(tb_uint_t pid, tb_uint_t table_id)
 	}
 
 	// check
-	ts_assert((pid == TS_PID_PAT) == (entries->table_id_t == en_ts_table_pat));
+	tb_assert((pid == TS_PID_PAT) == (entries->table_id_t == en_ts_table_pat));
 
 	return entries->table_id_t;
 }
 static tb_bool_t ts_table_decode_specific_table(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder, ts_table_header_t* table)
 {
-	ts_assert(ts_packet && tb_decoder && table);
+	tb_assert(ts_packet && tb_decoder && table);
 	if (!ts_packet || !tb_decoder || !table) return TB_FALSE;
 
 	ts_header_t*		ts_header		= &(ts_packet->header);
@@ -60,7 +60,7 @@ static tb_bool_t ts_table_decode_specific_table(ts_packet_t* ts_packet, ts_table
 // merge all pat sections
 static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder)
 {
-	ts_assert(ts_packet && tb_decoder);
+	tb_assert(ts_packet && tb_decoder);
 	if (!ts_packet || !tb_decoder) return ;
 
 	ts_data_t*			ts_data			= &(ts_packet->data);
@@ -96,19 +96,19 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 				// check table_id_extension
 				if (tb_decoder->building_table->table_id_extension != section->table_id_extension)
 				{
-					ts_trace("table_id_extension differs whereas no TS discontinuity has occured");
+					tb_trace("table_id_extension differs whereas no TS discontinuity has occured");
 					is_reinit = TB_TRUE;
 				}
 				// check version_number
 				else if (tb_decoder->building_table->version_number != section->version_number)
 				{
-					ts_trace("version_number differs whereas no discontinuity has occured");
+					tb_trace("version_number differs whereas no discontinuity has occured");
 					is_reinit = TB_TRUE;
 				}
 				// check last_section_number
 				else if (tb_decoder->last_section_number != section->last_section_number)
 				{
-					ts_trace("'last_section_number differs whereas no discontinuity has occured");
+					tb_trace("'last_section_number differs whereas no discontinuity has occured");
 					is_reinit = TB_TRUE;
 				}
 			}
@@ -176,7 +176,7 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 		// fill the section array
 		if (tb_decoder->sections[section->section_number])
 		{
-			ts_trace("overwrite section number %d", section->section_number);
+			tb_trace("overwrite section number %d", section->section_number);
 			ts_section_destroy_section(tb_decoder->sections[section->section_number]);
 		}
 		tb_decoder->sections[section->section_number] = section;
@@ -226,7 +226,7 @@ static void ts_table_merge_sections(ts_packet_t* ts_packet, ts_table_decoder_t* 
 // section callback
 static void ts_section_callback(ts_packet_t* ts_packet, void* sc_decoder)
 {
-	ts_assert(ts_packet && sc_decoder);
+	tb_assert(ts_packet && sc_decoder);
 	if (!ts_packet || !sc_decoder) return ;
 
 	// merge all sections and decode specific table
@@ -237,7 +237,7 @@ static void ts_section_callback(ts_packet_t* ts_packet, void* sc_decoder)
  */
 void ts_table_decoder_init(ts_table_decoder_t* tb_decoder, tb_uint_t pid_filter)
 {
-	ts_assert(tb_decoder);
+	tb_assert(tb_decoder);
 	if (!tb_decoder) return ;
 
 	// init section decoders
@@ -300,7 +300,7 @@ void ts_table_decoder_exit(ts_table_decoder_t* tb_decoder)
 // decode table
 tb_bool_t ts_table_decode(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return ;
 
 	// filter pid
@@ -314,7 +314,7 @@ tb_bool_t ts_table_decode(ts_packet_t* ts_packet, ts_table_decoder_t* tb_decoder
 // register callback
 void ts_table_register_callback(ts_table_decoder_t* tb_decoder, ts_table_callback_t callback, void* cb_data)
 {
-	ts_assert(tb_decoder);
+	tb_assert(tb_decoder);
 	if (!tb_decoder) return ;
 
 	tb_decoder->callback = callback;

@@ -25,42 +25,6 @@ extern "C" {
 # 	define TS_DEBUG
 #endif
 
-// tag
-#define TS_TAG 											"ts"
-
-// print
-#ifndef TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO
-# 	define ts_print(fmt, arg...)						tb_print_tag(TS_TAG, fmt, ## arg)
-#else
-#	define ts_print
-#endif
-
-// trace
-#ifndef TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO
-# 	define ts_trace(fmt, arg...)						tb_trace_tag(TS_TAG, fmt, ## arg)
-# 	define ts_trace_line(fmt, arg...) 					tb_trace_line_tag(TS_TAG, fmt, ## arg)
-#else
-# 	define ts_trace
-# 	define ts_trace_line
-#endif
-
-#define tb_trace_noimpl() 								ts_trace_line("[no_impl]: ")
-
-// assert
-#define ts_assert(x)									tb_assert_tag(TS_TAG, x)
-#define ts_assert_abort(x)								tb_assert_abort_tag(TS_TAG, x)
-#define ts_assert_return(x)								tb_assert_return_tag(TS_TAG, x)
-#define ts_assert_return_val(x, v)						tb_assert_return_val_tag(TS_TAG, x, v)
-#define ts_assert_goto(x, b)							tb_assert_goto_tag(TS_TAG, x, b)
-#define ts_assert_break(x)								tb_assert_break_tag(TS_TAG, x)
-#define ts_assert_continue(x)							tb_assert_continue_tag(TS_TAG, x)
-#define ts_assert_and_check_abort(x)					tb_assert_and_check_abort_tag(TS_TAG, x)
-#define ts_assert_and_check_return(x)					tb_assert_and_check_return_tag(TS_TAG, x)
-#define ts_assert_and_check_return_val(x, v)			tb_assert_and_check_return_val_tag(TS_TAG, x, v)
-#define ts_assert_and_check_goto(x, b)					tb_assert_and_check_goto_tag(TS_TAG, x, b)
-#define ts_assert_and_check_break(x)					tb_assert_and_check_break_tag(TS_TAG, x)
-#define ts_assert_and_check_continue(x)					tb_assert_and_check_continue_tag(TS_TAG, x)
-
 // pid
 #define TS_PID(p)				(((tb_uint16_t)(p[1] & 0x1f) << 8) + p[2])
 #define TS_PID_PAT				(0x0000)
@@ -378,7 +342,7 @@ static tb_uint64_t ts_get_bits48(tb_byte_t *data, tb_int_t byte_offset, tb_int_t
 
 	if (bit_n > 48)
 	{
-		ts_trace(" Error: ts_get_bits48() request out of bound!!!! (report!!)");
+		tb_trace(" Error: ts_get_bits48() request out of bound!!!! (report!!)");
 		return 0xFEFEFEFEFEFEFEFEULL;
 	}
 
@@ -443,7 +407,7 @@ static tb_ulong_t ts_get_bits(tb_byte_t *data, tb_int_t byte_offset, tb_int_t bi
 			break;
 
 		default:	// -- 33.. bits: fail, deliver constant fail value
-			ts_trace(" Error: ts_get_bits() request out of bound!!!! (report!!)");
+			tb_trace(" Error: ts_get_bits() request out of bound!!!! (report!!)");
 			return (tb_ulong_t)0xFEFEFEFE;
 			break;
 	}

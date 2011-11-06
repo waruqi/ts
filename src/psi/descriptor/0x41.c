@@ -14,13 +14,13 @@
 // decode service list descriptor
 ts_service_list_descriptor_t* ts_service_list_descriptor_decode(ts_descriptor_t* dr)
 {
-	ts_assert(dr);
+	tb_assert(dr);
 	if (!dr) return NULL;
 
 	// check the tag
 	if (dr->descriptor_tag != TS_DESCRIPTOR_TAG_SERVICE_LIST_DESCRIPTOR)
 	{
-		ts_trace("service list descriptor: bad tag (%#x)", dr->descriptor_tag);
+		tb_trace("service list descriptor: bad tag (%#x)", dr->descriptor_tag);
 		return NULL;
 	}
 
@@ -30,14 +30,14 @@ ts_service_list_descriptor_t* ts_service_list_descriptor_decode(ts_descriptor_t*
 	// check the length
 	if (dr->descriptor_length < 3)
 	{
-		ts_trace("service list descriptor: bad length (%d)", dr->descriptor_length);
+		tb_trace("service list descriptor: bad length (%d)", dr->descriptor_length);
 		return NULL;
 	}
 
 	// check data
 	if (!dr->data)
 	{
-		ts_trace("service list descriptor: invalid data");
+		tb_trace("service list descriptor: invalid data");
 		return NULL;
 	}
 

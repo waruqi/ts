@@ -24,7 +24,7 @@ ts_C_FILES 			+= \
 					psi/descriptor/0x48 \
 					psi/descriptor/0x4d
 
-ts_CFLAGS-$(DEBUG) 	+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
+ts_CPPFLAGS-$(DEBUG) 	+= -DTB_TRACE_TAG=\"ts\" -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
 
 # sub-projects
 ifeq ($(TS_CONFIG_DEMO),y)

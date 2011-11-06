@@ -24,7 +24,7 @@ static ts_table_sdt_service_t* ts_table_sdt_add_service(	ts_table_sdt_t* sdt,
 												,	tb_uint_t running_status
 												,	tb_uint_t free_ca_mode)
 {
-	ts_assert(sdt);
+	tb_assert(sdt);
 	if (!sdt) return NULL;
 
 	// create a new service
@@ -79,7 +79,7 @@ static void* ts_table_sdt_create(void* decoder, ts_section_t* sections)
 {
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)malloc(sizeof(ts_table_sdt_t));
 	ts_table_header_t* header = (ts_table_header_t*)sdt;
-	ts_assert(sdt);
+	tb_assert(sdt);
 
 	// init header
 	ts_section_t* section = sections;
@@ -106,7 +106,7 @@ static void* ts_table_sdt_create(void* decoder, ts_section_t* sections)
 // empty the all programs
 static void ts_table_sdt_empty(void* decoder, void* table)
 {
-	ts_assert(table);
+	tb_assert(table);
 	if (!table) return ;
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)table;
 
@@ -124,7 +124,7 @@ static void ts_table_sdt_empty(void* decoder, void* table)
 // destroy sdt
 static void ts_table_sdt_destroy(void* decoder, void* table)
 {
-	ts_assert(table);
+	tb_assert(table);
 	if (!table) return ;
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)table;
 
@@ -134,7 +134,7 @@ static void ts_table_sdt_destroy(void* decoder, void* table)
 // decode sdt
 static void ts_table_sdt_decode(void* decoder, void* table, ts_section_t* sections)
 {
-	ts_assert(table && sections);
+	tb_assert(table && sections);
 	if (!table || !sections) return ;
 	ts_table_sdt_t* sdt = (ts_table_sdt_t*)table;
 	ts_section_t* section = sections;
@@ -182,7 +182,7 @@ static void ts_table_sdt_decode(void* decoder, void* table, ts_section_t* sectio
 // check section
 static tb_bool_t ts_table_sdt_check(void* decoder, ts_section_t* section)
 {
-	ts_assert(decoder && section);
+	tb_assert(decoder && section);
 	if (!decoder || !section) return TB_FALSE;
 	if (!section) return TB_FALSE;
 
@@ -190,7 +190,7 @@ static tb_bool_t ts_table_sdt_check(void* decoder, ts_section_t* section)
 	if (!section->section_syntax_indicator)
 	{
 		// invalid section_syntax_indicator
-		ts_trace("invalid section (section_syntax_indicator == 0)");
+		tb_trace("invalid section (section_syntax_indicator == 0)");
 		return TB_FALSE;
 	}
 
@@ -233,44 +233,44 @@ void ts_table_sdt_destroy_decoder(ts_table_sdt_decoder_t* tb_sdt_decoder)
 // dump sdt info
 void ts_table_sdt_dump(ts_packet_t* ts_packet, ts_table_sdt_t* sdt)
 {
-	ts_assert(sdt && ts_packet);
+	tb_assert(sdt && ts_packet);
 	if (!sdt || !ts_packet) return ;
 
 	ts_table_header_t* header = (ts_table_header_t*)sdt;
-	ts_print("----------------------------------------"										);
-	ts_print("sdt(pid:%x)",						ts_packet->header.pid						);
-	ts_print("----------------------------------------"										);
-	ts_print("table_id:%x",						header->table_id							);
-	ts_print("section_syntax_indicator:%u",		header->section_syntax_indicator			);
-	ts_print("section_length:%u",				header->section_length						);
-	ts_print("transport_stream_id:%u",			header->table_id_extension					);
-	ts_print("version_number:%u",				header->version_number						);
-	ts_print("current_next_indicator:%u",		header->current_next_indicator				);
-	ts_print("section_number:%u",				header->section_number						);
-	ts_print("last_section_number:%u",			header->last_section_number					);
-	ts_print("crc:%x",							header->crc									);
-	ts_print("original_network_id:%x\n",		sdt->original_network_id					);
+	tb_print("----------------------------------------"										);
+	tb_print("sdt(pid:%x)",						ts_packet->header.pid						);
+	tb_print("----------------------------------------"										);
+	tb_print("table_id:%x",						header->table_id							);
+	tb_print("section_syntax_indicator:%u",		header->section_syntax_indicator			);
+	tb_print("section_length:%u",				header->section_length						);
+	tb_print("transport_stream_id:%u",			header->table_id_extension					);
+	tb_print("version_number:%u",				header->version_number						);
+	tb_print("current_next_indicator:%u",		header->current_next_indicator				);
+	tb_print("section_number:%u",				header->section_number						);
+	tb_print("last_section_number:%u",			header->last_section_number					);
+	tb_print("crc:%x",							header->crc									);
+	tb_print("original_network_id:%x\n",		sdt->original_network_id					);
 
 	ts_table_sdt_service_t* service = sdt->service_list;
 	while (service)
 	{
-		ts_print("\tservice_id:%u",					service->service_id					);
-		ts_print("\teit_schedule_flag:%u",			service->eit_schedule_flag			);
-		ts_print("\teit_present_following_flag:%u",	service->eit_present_following_flag	);
-		ts_print("\trunning_status:%u",				service->running_status				);
-		ts_print("\tfree_ca_mode:%u\n",				service->free_ca_mode				);
+		tb_print("\tservice_id:%u",					service->service_id					);
+		tb_print("\teit_schedule_flag:%u",			service->eit_schedule_flag			);
+		tb_print("\teit_present_following_flag:%u",	service->eit_present_following_flag	);
+		tb_print("\trunning_status:%u",				service->running_status				);
+		tb_print("\tfree_ca_mode:%u\n",				service->free_ca_mode				);
 
 		ts_descriptor_t* descriptor = service->descriptor_list;
 		while (descriptor)
 		{
-			ts_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag			);
-			ts_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length		);
+			tb_print("\t\tdescriptor_tag:%x",		descriptor->descriptor_tag			);
+			tb_print("\t\tdescriptor_length:%u\n",	descriptor->descriptor_length		);
 
 			if (descriptor->descriptor_tag == TS_DESCRIPTOR_TAG_SERVICE_DESCRIPTOR)
 			{
 				ts_service_descriptor_t* p = ts_service_descriptor_decode(descriptor);
-				ts_print("\t\tservice_provider_name:%s",	p->service_provider_name			);
-				ts_print("\t\tservice_name:%s\n",			p->service_name						);
+				tb_print("\t\tservice_provider_name:%s",	p->service_provider_name			);
+				tb_print("\t\tservice_name:%s\n",			p->service_name						);
 			}
 
 			descriptor = descriptor->next;
@@ -278,7 +278,7 @@ void ts_table_sdt_dump(ts_packet_t* ts_packet, ts_table_sdt_t* sdt)
 
 		service = service->next;
 	}
-	ts_print("========================================\n"										);
+	tb_print("========================================\n"										);
 }
 
 // extern "C" {

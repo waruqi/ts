@@ -14,7 +14,7 @@ extern "C" {
  */
 tb_bool_t ts_impl_decode_header(ts_packet_t* ts_packet, ts_decoder_t* ts_decoder)
 {
-	ts_assert(ts_packet && ts_decoder);
+	tb_assert(ts_packet && ts_decoder);
 	if (!ts_packet || !ts_decoder) return TB_FALSE;
 
 	ts_data_t*			ts_data			= &(ts_packet->data);
@@ -39,7 +39,7 @@ tb_bool_t ts_impl_decode_header(ts_packet_t* ts_packet, ts_decoder_t* ts_decoder
 }
 tb_bool_t ts_impl_decode_adaptation(ts_packet_t* ts_packet, ts_decoder_t* ts_decoder)
 {
-	ts_assert(ts_packet && ts_decoder);
+	tb_assert(ts_packet && ts_decoder);
 	if (!ts_packet || !ts_decoder) return TB_FALSE;
 
 	ts_data_t*			ts_data			= &(ts_packet->data);
@@ -206,7 +206,7 @@ void ts_dump_pcr(tb_uint64_t pcr_base, tb_uint_t pcr_ext)
 	tb_size_t s = tb_uint64_to_uint32(tb_uint64_div_uint32(p, 1000000)) - (h * 3600) - (m * 60);
 	tb_size_t u = tb_uint64_to_uint32(tb_uint64_sub(tb_uint64_sub(tb_uint64_sub(p, tb_uint64_mul_uint32(b, h * 60)), tb_uint64_mul_uint32(b, m)), tb_uint64_mul_uint32(tb_uint32_to_uint64(s), 1000000)));
 
-	ts_print("pcr: %u:%02u:%02u.%06u", h, m, s, u);
+	tb_print("pcr: %u:%02u:%02u.%06u", h, m, s, u);
 }
 // pcr_base: 90kHz
 void ts_dump_pcr_base(tb_uint64_t pcr_base)
@@ -226,46 +226,46 @@ void ts_dump_pcr_base(tb_uint64_t pcr_base)
 	tb_size_t s = tb_uint64_to_uint32(tb_uint64_div_uint32(p, 10000)) - (h * 3600) - (m * 60);
 	tb_size_t u = tb_uint64_to_uint32(tb_uint64_sub(tb_uint64_sub(tb_uint64_sub(p, tb_uint64_mul_uint32(b, h * 60)), tb_uint64_mul_uint32(b, m)), tb_uint64_mul_uint32(tb_uint32_to_uint64(s), 10000)));
 
-	ts_print("pcr: %u:%02u:%02u.%06u", h, m, s, u);
+	tb_print("pcr: %u:%02u:%02u.%06u", h, m, s, u);
 }
 void ts_dump_header(ts_packet_t* ts_packet)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return ;
 	ts_header_t* ts_header = &(ts_packet->header);
 
-	ts_print("----------------------------------------"											);
-	ts_print("transport header:"																);
-	ts_print("----------------------------------------"											);
-	ts_print("sync_byte: %#x",							ts_header->sync_byte					);
-	ts_print("transport_error_indicator: %u",			ts_header->transport_error_indicator	);
-	ts_print("payload_unit_start_indicator: %u",		ts_header->payload_unit_start_indicator	);
-	ts_print("transport_priority: %u",					ts_header->transport_priority			);
-	ts_print("pid: %#x",								ts_header->pid							);
-	ts_print("transport_scrambling_control: %u",		ts_header->transport_scrambling_control	);
-	ts_print("adaptation_field_control: %u",			ts_header->adaptation_field_control		);
-	ts_print("continuity_counter: %u",					ts_header->continuity_counter			);
-	ts_print("========================================\n"										);
+	tb_print("----------------------------------------"											);
+	tb_print("transport header:"																);
+	tb_print("----------------------------------------"											);
+	tb_print("sync_byte: %#x",							ts_header->sync_byte					);
+	tb_print("transport_error_indicator: %u",			ts_header->transport_error_indicator	);
+	tb_print("payload_unit_start_indicator: %u",		ts_header->payload_unit_start_indicator	);
+	tb_print("transport_priority: %u",					ts_header->transport_priority			);
+	tb_print("pid: %#x",								ts_header->pid							);
+	tb_print("transport_scrambling_control: %u",		ts_header->transport_scrambling_control	);
+	tb_print("adaptation_field_control: %u",			ts_header->adaptation_field_control		);
+	tb_print("continuity_counter: %u",					ts_header->continuity_counter			);
+	tb_print("========================================\n"										);
 }
 void ts_dump_adaptation(ts_packet_t* ts_packet)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return ;
 	ts_adaptation_t*	ts_adaptation	= &(ts_packet->adaptation);
 
-	ts_print("----------------------------------------"																);
-	ts_print("adaptationfield header:"																				);
-	ts_print("----------------------------------------"																);
-	ts_print("adaptation_field_length: %u",					ts_adaptation->adaptation_field_length					);
-	ts_print("discontinuity_indicator: %u",					ts_adaptation->discontinuity_indicator					);
-	ts_print("random_access_indicator: %u",					ts_adaptation->random_access_indicator					);
-	ts_print("elementary_stream_priority_indicator: %u", 	ts_adaptation->elementary_stream_priority_indicator		);
-	ts_print("pcr_flag: %u",								ts_adaptation->pcr_flag									);
-	ts_print("opcr_flag: %u",								ts_adaptation->opcr_flag								);
-	ts_print("splicing_point_flag: %u",						ts_adaptation->splicing_point_flag						);
-	ts_print("transport_private_data_flag: %u",				ts_adaptation->transport_private_data_flag				);
-	ts_print("extension_flag: %u",							ts_adaptation->adaptation_field_extension_flag			);
-	ts_print("========================================\n"															);
+	tb_print("----------------------------------------"																);
+	tb_print("adaptationfield header:"																				);
+	tb_print("----------------------------------------"																);
+	tb_print("adaptation_field_length: %u",					ts_adaptation->adaptation_field_length					);
+	tb_print("discontinuity_indicator: %u",					ts_adaptation->discontinuity_indicator					);
+	tb_print("random_access_indicator: %u",					ts_adaptation->random_access_indicator					);
+	tb_print("elementary_stream_priority_indicator: %u", 	ts_adaptation->elementary_stream_priority_indicator		);
+	tb_print("pcr_flag: %u",								ts_adaptation->pcr_flag									);
+	tb_print("opcr_flag: %u",								ts_adaptation->opcr_flag								);
+	tb_print("splicing_point_flag: %u",						ts_adaptation->splicing_point_flag						);
+	tb_print("transport_private_data_flag: %u",				ts_adaptation->transport_private_data_flag				);
+	tb_print("extension_flag: %u",							ts_adaptation->adaptation_field_extension_flag			);
+	tb_print("========================================\n"															);
 
 	// dump others
 	// ...
@@ -275,13 +275,13 @@ void ts_dump_adaptation(ts_packet_t* ts_packet)
  */
 tb_bool_t ts_exists_adaptation(ts_packet_t* ts_packet)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return TB_FALSE;
 	return ((ts_packet->header.adaptation_field_control == 0x2) || (ts_packet->header.adaptation_field_control == 0x3))? TB_TRUE : TB_FALSE;
 }
 tb_bool_t ts_exists_payload(ts_packet_t* ts_packet)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return TB_FALSE;
 	return ((ts_packet->header.adaptation_field_control == 0x1) || (ts_packet->header.adaptation_field_control == 0x3))? TB_TRUE : TB_FALSE;
 }
@@ -292,7 +292,7 @@ tb_bool_t ts_exists_payload(ts_packet_t* ts_packet)
 ts_decoder_t* ts_create_decoder()
 {
 	ts_decoder_t* ts_decoder = (ts_decoder_t*)malloc(sizeof(ts_decoder_t));
-	ts_assert(ts_decoder);
+	tb_assert(ts_decoder);
 	ts_decoder->skip_adaptation = TB_FALSE;
 
 	return ts_decoder;
@@ -305,7 +305,7 @@ void ts_destroy_decoder(ts_decoder_t* ts_decoder)
 
 void ts_init_packet(ts_packet_t* ts_packet)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return ;
 	memset(ts_packet, 0, sizeof(ts_packet_t));
 
@@ -326,8 +326,8 @@ void ts_init_packet(ts_packet_t* ts_packet)
 }
 tb_bool_t ts_read_packet(tb_int_t fd, ts_packet_t* ts_packet)
 {
-	ts_assert(ts_packet);
-	ts_assert(fd >= 0);
+	tb_assert(ts_packet);
+	tb_assert(fd >= 0);
 	if (fd < 0 || !ts_packet) return TB_FALSE;
 
 	// init packet
@@ -355,7 +355,7 @@ tb_bool_t ts_read_packet(tb_int_t fd, ts_packet_t* ts_packet)
 
 tb_bool_t	ts_decode_packet(ts_packet_t* ts_packet, ts_decoder_t* ts_decoder)
 {
-	ts_assert(ts_packet);
+	tb_assert(ts_packet);
 	if (!ts_packet) return TB_FALSE;
 
 	ts_data_t*			ts_data			= &(ts_packet->data);
@@ -367,7 +367,7 @@ tb_bool_t	ts_decode_packet(ts_packet_t* ts_packet, ts_decoder_t* ts_decoder)
 	if (TB_FALSE == ts_impl_decode_header(ts_packet, ts_decoder)
 	||	ts_header->sync_byte != TS_SYNC_BYTE)
 	{
-		ts_trace("cannot decode ts header");
+		tb_trace("cannot decode ts header");
 		return TB_FALSE;
 	}
 
@@ -375,7 +375,7 @@ tb_bool_t	ts_decode_packet(ts_packet_t* ts_packet, ts_decoder_t* ts_decoder)
 	if (TB_TRUE == ts_exists_adaptation(ts_packet)
 	&&	TB_FALSE == ts_impl_decode_adaptation(ts_packet, ts_decoder))
 	{
-		ts_trace("cannot decode ts adaptation field");
+		tb_trace("cannot decode ts adaptation field");
 			return TB_FALSE;
 	}
 
